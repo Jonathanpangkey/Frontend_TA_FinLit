@@ -7,6 +7,12 @@ const Navbar = () => {
     setIsOpen(!isOpen);
   };
 
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("firstName");
+    window.location.href = "/login";
+  };
+
   return (
     <nav className='navbar'>
       <div className='navbar-container'>
@@ -20,6 +26,9 @@ const Navbar = () => {
             <li>Favorit/Bookmark</li>
             <li>Tentang</li>
             <li>Deskripsi</li>
+            <li onClick={logout} style={{cursor: "pointer"}}>
+              Logout
+            </li>
           </ul>
         </div>
         <div className='navbar-profile'>

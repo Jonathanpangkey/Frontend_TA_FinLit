@@ -1,13 +1,13 @@
 /* General Styling */
 * {
-  color: rgb(0, 0, 0, 0.8);
+  color: rgba(0, 0, 0, 0.8);
   font-family: "Roboto Flex", sans-serif;
-  margin: 0;
-  padding: 0;
 }
 
 body {
   background: #f9f9f9;
+  margin: 0;
+  padding: 0;
 }
 
 .container {
@@ -47,7 +47,7 @@ p {
 
 /* Navbar */
 .navbar {
-  background: linear-gradient(90deg, rgb(252, 163, 19) 0%, rgb(255, 157, 0, 0.6) 100%);
+  background: linear-gradient(90deg, rgb(252, 163, 19) 0%, rgba(255, 157, 0, 0.6) 100%);
   padding: 1.3rem 1.5rem;
   position: relative;
 }
@@ -115,18 +115,14 @@ p {
   transition: transform 0.3s ease;
 }
 
-/* Navbar */
-/* General Styling */
-
-/* Register Login */
-
+/* Authentication */
 .auth-head {
   text-align: center;
   margin: 3rem 0;
 }
 
 .auth-head p,
-h2 {
+.auth-head h2 {
   margin: 9px;
 }
 
@@ -146,6 +142,19 @@ h2 {
 .form-container .form-links {
   width: 50%;
   text-align: center;
+}
+
+.form-container .error p {
+  padding: 10px;
+  color: rgb(245, 119, 119);
+  background: rgb(248, 230, 179);
+  border: 1px solid rgb(244, 214, 134);
+  border-radius: 5px;
+  display: none;
+}
+
+.form-container .open p {
+  display: flex;
 }
 
 form {
@@ -172,10 +181,7 @@ input {
   margin-top: 3rem;
 }
 
-/* Register */
-
 /* Home */
-
 .home-container span {
   color: #f9a826;
 }
@@ -183,28 +189,28 @@ input {
 .top-home {
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 .progress-box {
-  margin-top: 20px;
   padding: 20px;
   display: flex;
   justify-content: space-around;
   align-items: center;
   border-radius: 20px;
-  background: linear-gradient(270deg, rgb(252, 163, 19) 0%, rgb(255, 157, 0, 0.6) 100%);
+  background: linear-gradient(270deg, rgb(252, 163, 19) 0%, rgba(255, 157, 0, 0.6) 100%);
 }
 
-.progress-box h2 {
+.progress-box h2,
+.progress-box p {
   color: white;
+  margin: 0;
 }
 
 .circle {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: conic-gradient(rgb(252, 163, 19) 0%, rgb(255, 157, 0) 100%);
+  border: 3px solid white;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -219,8 +225,13 @@ input {
   color: white;
 }
 
-.material-section {
-  margin-top: 5rem;
+/* SubModule Section */
+.submodule-section {
+  margin-top: 2rem;
+}
+
+.submodule-section ul {
+  padding: 0;
 }
 
 .section-title {
@@ -230,7 +241,7 @@ input {
   color: #333;
 }
 
-.material-box {
+.submodule-box {
   background-color: #fff;
   border-radius: 12px;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
@@ -240,33 +251,43 @@ input {
   transition: box-shadow 0.3s ease;
 }
 
-.material-box:hover {
+.submodule-box:hover {
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.material-header {
+.submodule-box.locked {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.submodule-box.unlocked {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.submodule-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px;
 }
 
-.material-title h3 {
+.submodule-title h3 {
   margin: 0;
   font-size: 16px;
 }
 
-.material-title p {
+.submodule-title p {
   margin: 5px 0 0 0;
   font-size: 12px;
   color: #777;
 }
 
-.material-toggle i {
+.submodule-toggle i {
   font-size: 18px;
 }
 
-.material-content {
+.submodule-content {
   padding: 15px;
   background-color: #f9f9f9;
   border-top: 1px solid #eee;
@@ -274,8 +295,168 @@ input {
   color: #555;
 }
 
-/* Home */
+/* Material */
+.material-display h3,
+.material-display h2,
+.material-display h1 {
+  margin-top: 25px;
+  margin-bottom: 5px;
+}
 
+.material-display {
+  padding: 1rem 2rem;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.material-display h4 {
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
+
+pre,
+code {
+  background-color: #f5f5f5;
+  padding: 0 5px;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.material-display img {
+  width: 100%;
+  max-width: 700px;
+}
+
+.material-display button {
+  border: none;
+  background: none;
+  color: #f5a623;
+  cursor: pointer;
+}
+
+.material-display button:hover {
+  color: #fbd18d;
+}
+
+/* Quiz */
+
+.quiz-container {
+  max-width: 600px;
+  margin: auto;
+  margin-top: 3rem;
+  background: white;
+  padding: 1rem;
+  border-radius: 20px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.quiz-container h3 {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.quiz-container ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.quiz-container .quiz-option {
+  padding: 12px;
+  margin-bottom: 8px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.quiz-container .quiz-option:hover {
+  background-color: #f1f1f1;
+}
+
+.quiz-container .quiz-option.correct {
+  background-color: #c8e6c9;
+  border-color: #4caf50;
+  cursor: default;
+}
+
+.quiz-container .quiz-option.incorrect {
+  background-color: #ffcdd2;
+  border-color: #f44336;
+  cursor: default;
+}
+
+.quiz-container .quiz-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.quiz-container .quiz-feedback {
+  margin-top: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.quiz-container button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Profile */
+.profil-head {
+  text-align: center;
+  margin: 1rem 0 2rem 0;
+}
+
+label {
+  color: grey;
+}
+
+.input-container {
+  margin-bottom: 1rem;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper input {
+  background-color: transparent;
+  border-radius: 0;
+  padding: 1rem 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgb(134, 134, 134);
+  width: 100%;
+}
+
+.input-wrapper .icon {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+/* Quiz */
+.quiz-section {
+  margin-top: 20px;
+}
+
+.quiz-item {
+  margin-bottom: 20px;
+}
+
+.quiz-item ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.quiz-item li {
+  padding: 8px 0;
+}
+
+/* Responsive Design */
 @media screen and (max-width: 700px) {
   .container {
     padding: 2rem;
@@ -313,6 +494,15 @@ input {
   .progress-box h2 {
     color: white;
   }
+
+  .circle {
+    width: 80px;
+    height: 80px;
+  }
+
+  .circle::before {
+    font-size: 15px;
+  }
 }
 
 @media screen and (max-width: 550px) {
@@ -337,5 +527,10 @@ input {
   .progress-box h2 {
     font-size: 1.3rem;
     width: 50%;
+  }
+
+  .circle {
+    width: 65px;
+    height: 65px;
   }
 }

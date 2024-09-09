@@ -1,24 +1,23 @@
+import React, {useEffect, useState} from "react";
 import Navbar from "../components/Navbar";
-import MaterialSection from "../components/MaterialSection";
+import {fetchModules} from "../api/Module";
+import SubmoduleSection from "../components/SubmoduleSection";
 
 function Home() {
-  
-  const materialGroups = [
-    {
-      sectionTitle: "Pengelolaan Keuangan",
-      materials: [
-        {title: "Dasar dasar finansial", completed: 0, total: 3},
-        {title: "Dasar dasar finansial", completed: 0, total: 3},
-      ],
-    },
-    {
-      sectionTitle: "Pengelolaan Keuangan 2",
-      materials: [
-        {title: "Dasar dasar finansial", completed: 0, total: 3},
-        {title: "Ujian Akhir", completed: 0, total: 3},
-      ],
-    },
-  ];
+  const [modules, setModules] = useState([]);
+  const firstName = localStorage.getItem("firstName");
+
+  useEffect(() => {
+    const loadModules = async () => {
+      try {
+        const modulesData = await fetchModules();
+        setModules(modulesData);
+      } catch (error) {
+        console.error("Error fetching modules:", error);
+      }
+    };
+    loadModules();
+  }, []);
 
   return (
     <>
@@ -26,21 +25,31 @@ function Home() {
       <div className='container home-container'>
         <div className='top-home'>
           <h3>
-            Halo, <span>Jonathan Pangkey</span>
+            Halo, <span>{firstName}</span>
           </h3>
-          <p>Yuk mulai belajar ilmu finansial !!</p>
+          <p>Tingkatkan pengetahuan anda dengan materi terbaru, yuk mulai belajar ilmu finansial !!</p>
           <div className='progress-box'>
-            <h2>PROGRESS KAMU SAAT INI</h2>
-            <div className='circle'></div>
+            <div className='text'>
+              <h2>PROGRESS KAMU SAAT INI</h2>
+              <p>Pantau kemajuan kamu dan raih lebih banyak pencapaian !</p>
+            </div>
+            <div className='circle-container'>
+              <div className='circle'></div>
+            </div>
           </div>
         </div>
 
-        {/* Material List Sections */}
-        <>
-          {materialGroups.map((group, index) => (
-            <MaterialSection key={index} sectionTitle={group.sectionTitle} materials={group.materials} />
-          ))}
-        </>
+        {modules.map((module, index) => {
+          // jika index 0 akan otomatis true, jika tidak akan dilakukan pengecekan
+          const previousModuleCompleted =
+            index === 0
+              ? true
+              : modules[index - 1].subModules.every((subModule) => {
+                  return subModule.completedMaterialsCount >= subModule.materials.length && subModule.quizCompleted; // semua submodule harus complete (material & quiz)
+                });
+
+          return <SubmoduleSection key={module.id} module={module} isFirstModule={index === 0} previousModuleCompleted={previousModuleCompleted} />;
+        })}
       </div>
     </>
   );
