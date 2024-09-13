@@ -2,9 +2,14 @@ import React, {useEffect, useState} from "react";
 import Navbar from "../components/Navbar";
 import {fetchModules} from "../api/Module";
 import SubmoduleSection from "../components/SubmoduleSection";
+import ProgressSection from "../components/ProgressCircle";
+import {useNavigate} from "react-router-dom";
 
 function Home() {
   const [modules, setModules] = useState([]);
+  const [progress, setProgress] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   const firstName = localStorage.getItem("firstName");
 
   useEffect(() => {
@@ -12,6 +17,7 @@ function Home() {
       try {
         const modulesData = await fetchModules();
         setModules(modulesData);
+        calculateProgress(modulesData); // Calculate progress after fetching modules
       } catch (error) {
         console.error("Error fetching modules:", error);
       }
@@ -19,25 +25,37 @@ function Home() {
     loadModules();
   }, []);
 
+  const calculateProgress = (modules) => {
+    let totalItems = 0;
+    let completedItems = 0;
+
+    modules.forEach((module) => {
+      module.subModules.forEach((subModule) => {
+        // Calculate materials progress
+        totalItems += subModule.materials.length;
+        completedItems += subModule.completedMaterialsCount || 0;
+
+        // Calculate quizzes progress
+        totalItems += subModule.quizzes.length;
+        if (subModule.quizCompleted) {
+          completedItems += subModule.quizzes.length;
+        }
+      });
+    });
+
+    const progressPercentage = (completedItems / totalItems) * 100;
+    setProgress(progressPercentage); // Update state with the calculated progress
+  };
+
+  const navigateToExamPage = () => {
+    navigate(`/exam`);
+  };
+
   return (
     <>
       <Navbar />
       <div className='container home-container'>
-        <div className='top-home'>
-          <h3>
-            Halo, <span>{firstName}</span>
-          </h3>
-          <p>Tingkatkan pengetahuan anda dengan materi terbaru, yuk mulai belajar ilmu finansial !!</p>
-          <div className='progress-box'>
-            <div className='text'>
-              <h2>PROGRESS KAMU SAAT INI</h2>
-              <p>Pantau kemajuan kamu dan raih lebih banyak pencapaian !</p>
-            </div>
-            <div className='circle-container'>
-              <div className='circle'></div>
-            </div>
-          </div>
-        </div>
+        <ProgressSection percentage={progress} firstName={firstName} />
 
         {modules.map((module, index) => {
           // jika index 0 akan otomatis true, jika tidak akan dilakukan pengecekan
@@ -50,6 +68,22 @@ function Home() {
 
           return <SubmoduleSection key={module.id} module={module} isFirstModule={index === 0} previousModuleCompleted={previousModuleCompleted} />;
         })}
+        <div className='exam-box'>
+          <div className='exam-header' onClick={() => setIsOpen(!isOpen)}>
+            <h3 onClick={() => navigateToExamPage()}>Final Exam</h3>
+            <div className='submodule-toggle'>
+              <i className={`fa-solid ${isOpen ? "fa-chevron-up" : "fa-chevron-down"}`}></i>
+            </div>
+          </div>
+          {isOpen && (
+            <div className='exam-content'>
+              <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab natus deleniti magnam cumque tempora. Sed distinctio aperiam numquam quia
+                molestiae.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

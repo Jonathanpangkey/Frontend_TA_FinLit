@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 
 const Quiz = ({quizzes, subModuleId}) => {
   const [quizStates, setQuizStates] = useState(
-    quizzes.map((quiz) => ({
+    quizzes.map(() => ({
       selectedOption: null,
       isAnswered: false,
       isCorrect: null,
@@ -15,6 +15,8 @@ const Quiz = ({quizzes, subModuleId}) => {
 
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
   const [showResults, setShowResults] = useState(false);
+  const [isQuizCompleted, setIsQuizCompleted] = useState(false);
+
   const navigate = useNavigate();
 
   const handleOptionClick = (option) => {
@@ -35,17 +37,11 @@ const Quiz = ({quizzes, subModuleId}) => {
     }
   };
 
-  const handleNextQuiz = () => {
-    if (currentQuizIndex < quizzes.length - 1) {
-      setCurrentQuizIndex(currentQuizIndex + 1);
-    } else {
-      handleFinishQuiz();
-    }
-  };
-
-  const handlePreviousQuiz = () => {
-    if (currentQuizIndex > 0) {
-      setCurrentQuizIndex(currentQuizIndex - 1);
+  // Generalized function to change quiz index based on offset
+  const changeQuestion = (offset) => {
+    const targetIndex = currentQuizIndex + offset;
+    if (targetIndex >= 0 && targetIndex < quizzes.length) {
+      setCurrentQuizIndex(targetIndex);
     }
   };
 
@@ -60,26 +56,21 @@ const Quiz = ({quizzes, subModuleId}) => {
     });
 
     if (result.isConfirmed) {
-      // Note the change here
       setShowResults(true);
+      setIsQuizCompleted(true);
+
+      const totalPossibleScore = quizzes.length * 10;
 
       // Calculate the score
       const score = quizStates.reduce((acc, quizState, index) => acc + (quizState.isCorrect ? quizzes[index].score : 0), 0);
 
-      // Check if the score meets the required threshold (20 points)
-      if (score >= 20) {
+      // Submit the score only if it passes the threshold
+      if (score >= totalPossibleScore) {
         try {
           await completeQuiz(subModuleId, score);
-          console.log("Quiz completed and score submitted successfully.");
         } catch (error) {
           console.error("Failed to submit the quiz score.");
         }
-      } else {
-        Swal.fire({
-          icon: "info",
-          title: "Insufficient Score",
-          text: `You need at least 20 points to complete the quiz. Your score is ${score}.`,
-        });
       }
     }
   };
@@ -89,11 +80,9 @@ const Quiz = ({quizzes, subModuleId}) => {
     setCurrentQuizIndex(0);
   };
 
-  const handleGoHome = () => {
-    navigate("/home");
-  };
-
   const score = quizStates.reduce((acc, quizState, index) => acc + (quizState.isCorrect ? quizzes[index].score : 0), 0);
+
+  const totalPossibleScore = quizzes.length * 10;
 
   return (
     <div className='quiz-container'>
@@ -101,13 +90,15 @@ const Quiz = ({quizzes, subModuleId}) => {
         <div className='quiz-results'>
           <h3>Quiz Results</h3>
           <p>
-            Your Score: {score} out of {quizzes.length * quizzes[0].score}
+            Your Score: {score} out of {totalPossibleScore}
           </p>
+          {score < totalPossibleScore && <p style={{color: "red"}}>You didn't pass the quiz. Keep practicing to improve your score!</p>}
+          <br />
           <button onClick={handleReviewQuizzes}>Review Quizzes</button>
-          <button onClick={handleGoHome}>Go Home</button>
+          <button onClick={() => navigate("/home")}>Go Home</button>
         </div>
       ) : (
-        <div className=''>
+        <div>
           <h3>{quizzes[currentQuizIndex].question}</h3>
           <ul>
             {quizzes[currentQuizIndex].options.split(",").map((option, index) => (
@@ -125,13 +116,15 @@ const Quiz = ({quizzes, subModuleId}) => {
             ))}
           </ul>
           <div className='quiz-navigation'>
-            {currentQuizIndex > 0 && <button onClick={handlePreviousQuiz}>Previous</button>}
+            {currentQuizIndex > 0 && <button onClick={() => changeQuestion(-1)}>Previous</button>}
             {currentQuizIndex < quizzes.length - 1 ? (
-              <button onClick={handleNextQuiz}>Next</button>
+              <button onClick={() => changeQuestion(1)}>Next</button>
             ) : (
-              <button onClick={handleFinishQuiz}>Finish</button>
+              !isQuizCompleted && <button onClick={handleFinishQuiz}>Finish</button>
             )}
+            {isQuizCompleted && <button onClick={() => setShowResults(true)}>Go to Results</button>}
           </div>
+
           {quizStates[currentQuizIndex].isAnswered && (
             <div className='quiz-feedback'>
               {quizStates[currentQuizIndex].isCorrect ? (
