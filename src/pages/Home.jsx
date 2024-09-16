@@ -4,6 +4,7 @@ import {fetchModules} from "../api/Module";
 import SubmoduleSection from "../components/SubmoduleSection";
 import ProgressSection from "../components/ProgressCircle";
 import {useNavigate} from "react-router-dom";
+import useIntersectionObserver from "../useIntersectionObserver";
 
 function Home() {
   const [modules, setModules] = useState([]);
@@ -11,13 +12,14 @@ function Home() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const firstName = localStorage.getItem("firstName");
+  const [examBoxRef, isVisible] = useIntersectionObserver({threshold: 0.1});
 
   useEffect(() => {
     const loadModules = async () => {
       try {
         const modulesData = await fetchModules();
         setModules(modulesData);
-        calculateProgress(modulesData); // Calculate progress after fetching modules
+        calculateProgress(modulesData);
       } catch (error) {
         console.error("Error fetching modules:", error);
       }
@@ -31,11 +33,9 @@ function Home() {
 
     modules.forEach((module) => {
       module.subModules.forEach((subModule) => {
-        // Calculate materials progress
         totalItems += subModule.materials.length;
         completedItems += subModule.completedMaterialsCount || 0;
 
-        // Calculate quizzes progress
         totalItems += subModule.quizzes.length;
         if (subModule.quizCompleted) {
           completedItems += subModule.quizzes.length;
@@ -44,7 +44,7 @@ function Home() {
     });
 
     const progressPercentage = (completedItems / totalItems) * 100;
-    setProgress(progressPercentage); // Update state with the calculated progress
+    setProgress(progressPercentage);
   };
 
   const navigateToExamPage = () => {
@@ -58,17 +58,16 @@ function Home() {
         <ProgressSection percentage={progress} firstName={firstName} />
 
         {modules.map((module, index) => {
-          // jika index 0 akan otomatis true, jika tidak akan dilakukan pengecekan
           const previousModuleCompleted =
             index === 0
               ? true
               : modules[index - 1].subModules.every((subModule) => {
-                  return subModule.completedMaterialsCount >= subModule.materials.length && subModule.quizCompleted; // semua submodule harus complete (material & quiz)
+                  return subModule.completedMaterialsCount >= subModule.materials.length && subModule.quizCompleted;
                 });
 
           return <SubmoduleSection key={module.id} module={module} isFirstModule={index === 0} previousModuleCompleted={previousModuleCompleted} />;
         })}
-        <div className='exam-box'>
+        <div ref={examBoxRef} className={`exam-box ${isVisible ? "visible" : ""}`}>
           <div className='exam-header' onClick={() => setIsOpen(!isOpen)}>
             <h3 onClick={() => navigateToExamPage()}>Final Exam</h3>
             <div className='submodule-toggle'>

@@ -1,39 +1,12 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Swal from "sweetalert2";
+import useIntersectionObserver from "../useIntersectionObserver"; // Import the custom hook
 
 const SubModule = ({subModule, previousSubModuleCompleted, isFirstSubmodule}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const boxRef = useRef(null);
+  const [SubModuleBoxRef, isVisible] = useIntersectionObserver({threshold: 0.1});
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-          } else {
-            setIsVisible(false); 
-          }
-        });
-      },
-      {
-        threshold: 0.1, // Trigger when 10% of the element is visible
-      }
-    );
-
-    if (boxRef.current) {
-      observer.observe(boxRef.current);
-    }
-
-    return () => {
-      if (boxRef.current) {
-        observer.unobserve(boxRef.current);
-      }
-    };
-  }, []);
 
   const toggleOpen = () => setIsOpen(!isOpen);
 
@@ -81,7 +54,9 @@ const SubModule = ({subModule, previousSubModuleCompleted, isFirstSubmodule}) =>
   const isLocked = !isFirstSubmodule && !previousSubModuleCompleted;
 
   return (
-    <div ref={boxRef} className={`submodule-box ${isLocked ? "locked" : ""} ${isCompleted ? "completed" : ""} ${isVisible ? "visible" : ""}`}>
+    <div
+      ref={SubModuleBoxRef}
+      className={`submodule-box ${isLocked ? "locked" : ""} ${isCompleted ? "completed" : ""} ${isVisible ? "visible" : ""}`}>
       <div className='submodule-header' onClick={toggleOpen}>
         <div className='submodule-title' onClick={handleNavigation}>
           <h3>{subModule.name}</h3>
