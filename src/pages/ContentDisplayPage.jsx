@@ -4,14 +4,16 @@ import {getMaterialById, getMaterialsBySubModuleId} from "../api/Material";
 import {getQuizzesBySubModuleId} from "../api/Quiz";
 import Navbar from "../components/Navbar";
 import MaterialContent from "../components/MaterialContent";
-import Quiz from "../components/Quiz";
+import QuizContent from "../components/QuizContent";
+import HandsonPractice from "../components/HandsonPractice"; // import the new component
 
-function ContentDisplay() {
+function ContentDisplayPage() {
   const {subModuleId, materialId, quizId} = useParams();
   const [materials, setMaterials] = useState([]);
   const [currentMaterial, setCurrentMaterial] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
   const [viewingQuiz, setViewingQuiz] = useState(false);
+  const [viewingHandson, setViewingHandson] = useState(false); // new state for hands-on
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,12 +25,22 @@ function ContentDisplay() {
         setMaterials(sortedMaterials);
         setQuizzes(fetchedQuizzes);
 
+        // Menentukan material atau quiz yang dilihat berdasarkan URL params
         if (materialId) {
           const fetchedMaterial = await getMaterialById(materialId);
           setCurrentMaterial(fetchedMaterial);
           setViewingQuiz(false);
+          setViewingHandson(false);
         } else if (quizId) {
           setViewingQuiz(true);
+        } else {
+          // **Logika untuk hands-on** - hanya jika semua materi dan quiz selesai
+          const allMaterialsCompleted = sortedMaterials.every((material) => material.completed);
+          const allQuizzesCompleted = fetchedQuizzes.every((quiz) => quiz.completed);
+
+          if (subModuleId === "5" && allMaterialsCompleted && allQuizzesCompleted) {
+            setViewingHandson(true);
+          }
         }
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -38,16 +50,27 @@ function ContentDisplay() {
     fetchData();
   }, [subModuleId, materialId, quizId]);
 
+  // Menghitung current index material berdasarkan materialId
   const currentIndex = useMemo(() => materials.findIndex((material) => material.id === parseInt(materialId)), [materials, materialId]);
 
+  // Fungsi navigasi untuk material berikutnya/sebelumnya
   const handleNavigateToMaterial = (targetIndex) => {
     navigate(`/submodule/${subModuleId}/material/${materials[targetIndex].id}`);
     setViewingQuiz(false);
+    setViewingHandson(false); // pastikan hands-on disembunyikan saat berpindah material
   };
 
+  // Fungsi untuk melihat quiz
   const handleViewQuiz = () => {
-    navigate(`/submodule/${subModuleId}/quiz/${quizzes[0]?.id}`);
-    setViewingQuiz(true);
+    if (quizzes.length > 0) {
+      navigate(`/submodule/${subModuleId}/quiz/${quizzes[0].id}`);
+      setViewingQuiz(true);
+    }
+  };
+
+  const handleViewHandson = () => {
+    setViewingHandson(true); // Set state untuk menampilkan Hands-on
+    navigate(`/submodule/${subModuleId}/handson`); // Navigasi secara eksplisit
   };
 
   return (
@@ -55,7 +78,9 @@ function ContentDisplay() {
       <Navbar />
       <div className='material-display'>
         {viewingQuiz ? (
-          <Quiz quizzes={quizzes} quizId={quizId} subModuleId={subModuleId} />
+          <QuizContent quizzes={quizzes} quizId={quizId} subModuleId={subModuleId} />
+        ) : viewingHandson ? (
+          <HandsonPractice /> // tampilkan hands-on practice di sini
         ) : currentMaterial ? (
           <MaterialContent
             material={currentMaterial}
@@ -63,7 +88,9 @@ function ContentDisplay() {
             materials={materials}
             onNavigateToMaterial={handleNavigateToMaterial}
             onViewQuiz={handleViewQuiz}
+            onViewHandson={handleViewHandson}
             quizzes={quizzes}
+            subModuleId={subModuleId}
           />
         ) : (
           <p>Loading material...</p>
@@ -73,4 +100,4 @@ function ContentDisplay() {
   );
 }
 
-export default ContentDisplay;
+export default ContentDisplayPage;

@@ -3,52 +3,48 @@ import Navbar from "../components/Navbar";
 import {fetchModules} from "../api/Module";
 import SubmoduleSection from "../components/SubmoduleSection";
 import ProgressSection from "../components/ProgressCircle";
-import {useNavigate} from "react-router-dom";
-import useIntersectionObserver from "../useIntersectionObserver";
+import ExamBox from "../components/ExamBox"; // Import ExamBox
 
-function Home() {
+function HomePage() {
   const [modules, setModules] = useState([]);
   const [progress, setProgress] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
   const firstName = localStorage.getItem("firstName");
-  const [examBoxRef, isVisible] = useIntersectionObserver({threshold: 0.1});
 
   useEffect(() => {
-    const loadModules = async () => {
+    const loadData = async () => {
       try {
+        // Fetch modules
         const modulesData = await fetchModules();
         setModules(modulesData);
-        calculateProgress(modulesData);
+
+        // Calculate initial progress
+        calculateProgress(modulesData, false);
       } catch (error) {
-        console.error("Error fetching modules:", error);
+        console.error("Error loading data:", error);
       }
     };
-    loadModules();
+
+    loadData();
   }, []);
 
-  const calculateProgress = (modules) => {
+  const calculateProgress = (modules, examCompleted) => {
     let totalItems = 0;
     let completedItems = 0;
 
     modules.forEach((module) => {
       module.subModules.forEach((subModule) => {
-        totalItems += subModule.materials.length;
+        totalItems += subModule.materials.length + subModule.quizzes.length;
         completedItems += subModule.completedMaterialsCount || 0;
-
-        totalItems += subModule.quizzes.length;
-        if (subModule.quizCompleted) {
-          completedItems += subModule.quizzes.length;
-        }
+        completedItems += subModule.quizCompleted ? subModule.quizzes.length : 0;
       });
     });
 
+    // Include the exam in the progress calculation
+    totalItems += 1; // Assuming one exam
+    completedItems += examCompleted ? 1 : 0;
+
     const progressPercentage = (completedItems / totalItems) * 100;
     setProgress(progressPercentage);
-  };
-
-  const navigateToExamPage = () => {
-    navigate(`/exam`);
   };
 
   return (
@@ -56,7 +52,6 @@ function Home() {
       <Navbar />
       <div className='container home-container'>
         <ProgressSection percentage={progress} firstName={firstName} />
-
         {modules.map((module, index) => {
           const previousModuleCompleted =
             index === 0
@@ -67,25 +62,11 @@ function Home() {
 
           return <SubmoduleSection key={module.id} module={module} isFirstModule={index === 0} previousModuleCompleted={previousModuleCompleted} />;
         })}
-        <div ref={examBoxRef} className={`exam-box ${isVisible ? "visible" : ""}`}>
-          <div className='exam-header' onClick={() => setIsOpen(!isOpen)}>
-            <h3 onClick={() => navigateToExamPage()}>Final Exam</h3>
-            <div className='submodule-toggle'>
-              <i className={`fa-solid ${isOpen ? "fa-chevron-up" : "fa-chevron-down"}`}></i>
-            </div>
-          </div>
-          {isOpen && (
-            <div className='exam-content'>
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab natus deleniti magnam cumque tempora. Sed distinctio aperiam numquam quia
-                molestiae.
-              </p>
-            </div>
-          )}
-        </div>
+        <h3 className='section-title'>Ujian Akhir</h3>
+        <ExamBox modules={modules} calculateProgress={calculateProgress} /> {/* Use ExamBox */}
       </div>
     </>
   );
 }
 
-export default Home;
+export default HomePage;

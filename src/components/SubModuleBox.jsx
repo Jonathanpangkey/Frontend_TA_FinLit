@@ -20,12 +20,12 @@ const SubModule = ({subModule, previousSubModuleCompleted, isFirstSubmodule}) =>
 
       if (isMaterialCompleted) {
         Swal.fire({
-          title: "Continue from where you left off?",
-          text: "Would you like to continue from the last completed material or start from the beginning?",
+          title: "Lanjutkan dari tempat Anda berhenti?",
+          text: "Apakah Anda ingin melanjutkan dari materi terakhir yang diselesaikan atau mulai dari awal?",
           icon: "question",
           showCancelButton: true,
-          confirmButtonText: "Continue from Last Material",
-          cancelButtonText: "Start from Beginning",
+          confirmButtonText: "Lanjutkan dari Materi Terakhir",
+          cancelButtonText: "Mulai dari Awal",
         }).then((result) => {
           if (result.isConfirmed) {
             navigate(`/submodule/${subModule.id}/material/${targetMaterial.id}`);
@@ -40,8 +40,8 @@ const SubModule = ({subModule, previousSubModuleCompleted, isFirstSubmodule}) =>
     } else {
       Swal.fire({
         icon: "info",
-        title: "No content",
-        text: `No materials available in this submodule.`,
+        title: "Tidak ada konten",
+        text: `Tidak ada materi yang tersedia dalam submodul ini.`,
       });
     }
   };
@@ -59,9 +59,11 @@ const SubModule = ({subModule, previousSubModuleCompleted, isFirstSubmodule}) =>
       className={`submodule-box ${isLocked ? "locked" : ""} ${isCompleted ? "completed" : ""} ${isVisible ? "visible" : ""}`}>
       <div className='submodule-header' onClick={toggleOpen}>
         <div className='submodule-title' onClick={handleNavigation}>
-          <h3>{subModule.name}</h3>
+          <h3>
+            <i className='fa-solid fa-book title-icon'></i> {subModule.name}
+          </h3>
           <p>
-            {completedMaterialsCount}/{totalMaterials} Completed {quizCompleted ? "(Quiz Completed)" : "(Quiz Incomplete)"}
+            {completedMaterialsCount}/{totalMaterials} Selesai {quizCompleted ? "(Kuis Selesai)" : "(Kuis Belum Selesai)"}
           </p>
         </div>
         <div className='submodule-toggle'>

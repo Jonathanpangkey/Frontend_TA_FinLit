@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {login} from "../api/Auth";
 import {useNavigate} from "react-router-dom";
 
-function Login() {
+function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -12,16 +12,16 @@ function Login() {
     e.preventDefault();
     try {
       await login(email, password);
-      navigate("/home"); // Redirect to dashboard after successful login
+      navigate("/"); // Redirect to dashboard after successful login
     } catch (error) {
-      setError("Login failed. Please check your credentials.");
+      setError("Login gagal. Silakan periksa kredensial Anda.");
     }
   };
 
   return (
     <div className='container auth-container'>
       <div className='auth-head'>
-        <h3>Welcome back, please log in</h3>
+        <h3>Selamat datang kembali, silakan masuk</h3>
       </div>
       <div className='form-container'>
         <img src='img/registerilustration.png' alt='' />
@@ -31,16 +31,16 @@ function Login() {
               <p>{error}</p>
             </div>
             <input type='email' name='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} required />
-            <input type='password' name='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input type='password' name='password' placeholder='Kata Sandi' value={password} onChange={(e) => setPassword(e.target.value)} required />
             <p>
-              <a href='#'>Forgot password?</a>
+              <a href='#'>Lupa kata sandi?</a>
             </p>
             <button className='btn auth-btn' type='submit'>
-              Login
+              Masuk
             </button>
             <div>
               <p>
-                Don't have an account? <a href='/register'>Register</a>
+                Belum punya akun? <a href='/register'>Daftar</a>
               </p>
             </div>
           </form>
@@ -50,4 +50,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default LoginPage;

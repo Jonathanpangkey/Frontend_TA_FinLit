@@ -26,3 +26,4 @@ export const register = async (userData) => {
     throw error;
   }
 };
+

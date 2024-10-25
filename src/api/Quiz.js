@@ -15,9 +15,9 @@ export const getQuizzesBySubModuleId = async (subModuleId) => {
 };
 
 // Endpoint to mark quiz as completed and submit the score
-export const completeQuiz = async (subModuleId, score) => {
+export const completeQuiz = async (subModuleId) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/quizzes/${subModuleId}/complete`, {score}, {headers: getAuthHeader()});
+    const response = await axios.post(`${API_BASE_URL}/quizzes/${subModuleId}/complete`, null, {headers: getAuthHeader()});
     return response.data;
   } catch (error) {
     console.error("Failed to complete the quiz:", error);

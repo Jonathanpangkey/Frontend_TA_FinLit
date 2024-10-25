@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {getExams} from "../api/Exam";
+import {completeExam, getExams} from "../api/Exam";
 import Swal from "sweetalert2";
 import Navbar from "../components/Navbar";
 import {useNavigate} from "react-router-dom";
@@ -11,7 +11,12 @@ const ExamPage = () => {
   const [showResults, setShowResults] = useState(false);
   const [isExamCompleted, setIsExamCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isReviewing, setIsReviewing] = useState(false);
   const navigate = useNavigate();
+
+  // Calculate the score and total possible score
+  const score = examStates.reduce((acc, examState, index) => acc + (examState.isCorrect ? exams[index].score : 0), 0);
+  const totalPossibleScore = exams.length * 10;
 
   // Fetch exam data from API
   useEffect(() => {
@@ -19,6 +24,7 @@ const ExamPage = () => {
       try {
         const examData = await getExams(); // Fetch data
         setExams(examData);
+        console.log(examData);
         setExamStates(
           examData.map((exam) => ({
             question: exam.question,
@@ -38,6 +44,17 @@ const ExamPage = () => {
 
     fetchExams();
   }, []);
+
+  useEffect(() => {
+    const storedExamStates = localStorage.getItem(`examStates`);
+    if (storedExamStates) {
+      setExamStates(JSON.parse(storedExamStates));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(`examStates`, JSON.stringify(examStates));
+  }, [examStates]);
 
   const handleOptionClick = (option) => {
     if (!examStates[currentQuestionIndex].isAnswered) {
@@ -68,30 +85,47 @@ const ExamPage = () => {
 
   const handleFinishExam = async () => {
     const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "Are you sure you want to finish the exam?",
+      title: "Apakah Anda yakin?",
+      text: "Apakah Anda yakin ingin menyelesaikan ujian?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, finish it!",
-      cancelButtonText: "No, keep going",
+      confirmButtonText: "Ya, selesaikan!",
+      cancelButtonText: "Tidak, lanjutkan",
     });
 
     if (result.isConfirmed) {
       setShowResults(true);
       setIsExamCompleted(true);
+
+      // Submit the score only if it passes the threshold
+      if (score >= totalPossibleScore) {
+        try {
+          console.log("Submitting the exam and updating progress...");
+          const examProgress = {
+            examCompleted: true,
+            lastScore: score,
+            totalPossibleScore: totalPossibleScore,
+          };
+          await completeExam(examProgress);
+        } catch (error) {
+          console.error("Failed to submit the exam and update progress.");
+        }
+      }
     }
   };
 
   const handleReviewExam = () => {
     setShowResults(false);
+    setIsReviewing(true);
     setCurrentQuestionIndex(0);
   };
 
-  const score = examStates.reduce((acc, examState, index) => acc + (examState.isCorrect ? exams[index].score : 0), 0);
-  const totalPossibleScore = examStates.length * 10;
-  const passingScore = totalPossibleScore * 0.8;
+  const handleGoHome = () => {
+    localStorage.removeItem(`examStates`);
+    navigate("/");
+  };
 
-  if (loading) return <p>Loading exam...</p>;
+  if (loading) return <p>Memuat exam...</p>;
 
   return (
     <>
@@ -99,54 +133,61 @@ const ExamPage = () => {
       <div className='exam-container material-display'>
         {showResults ? (
           <div className='exam-results'>
-            <h3>Exam Results</h3>
+            <h3>Hasil Ujian</h3>
             <p>
-              Your Score: {score} out of {totalPossibleScore}
+              Skor Anda: {score} dari {totalPossibleScore}
             </p>
-            {score < passingScore && <p style={{color: "red"}}>You didn't pass the exam. Keep practicing to improve your score!</p>}
-            <button onClick={handleReviewExam}>Review Exam</button>
-            <button onClick={() => navigate("/home")}>Go Home</button>
+            {score < totalPossibleScore && <p style={{color: "red"}}>Anda tidak lulus ujian. Terus berlatih untuk meningkatkan skor Anda!</p>}
+            <button onClick={handleReviewExam}>Tinjau Ujian</button>
+            <button onClick={handleGoHome}>Kembali ke Beranda</button>
           </div>
         ) : (
           <div>
-            <h3>{examStates[currentQuestionIndex].question}</h3>
-            <ul>
-              {examStates[currentQuestionIndex].options.map((option, index) => (
-                <li
-                  key={index}
-                  onClick={() => handleOptionClick(option)}
-                  className={`exam-option ${
-                    examStates[currentQuestionIndex].selectedOption === option
-                      ? examStates[currentQuestionIndex].isCorrect
-                        ? "correct"
-                        : "incorrect"
-                      : ""
-                  }`}
-                  style={{
-                    cursor: examStates[currentQuestionIndex].isAnswered ? "not-allowed" : "pointer",
-                  }}>
-                  {option}
-                </li>
-              ))}
-            </ul>
-            <div className='exam-navigation'>
-              {currentQuestionIndex > 0 && <button onClick={() => changeQuestion(-1)}>Previous</button>}
-              {currentQuestionIndex < examStates.length - 1 ? (
-                <button onClick={() => changeQuestion(1)}>Next</button>
-              ) : (
-                !isExamCompleted && <button onClick={handleFinishExam}>Finish</button>
-              )}
-              {isExamCompleted && <button onClick={() => setShowResults(true)}>Go to Results</button>}
-            </div>
+            {examStates.length > 0 && (
+              <>
+                <h3>{examStates[currentQuestionIndex].question}</h3>
+                <ul>
+                  {examStates[currentQuestionIndex].options.map((option, index) => (
+                    <li
+                      key={index}
+                      onClick={() => handleOptionClick(option)}
+                      className={`exam-option ${
+                        examStates[currentQuestionIndex].selectedOption === option
+                          ? isReviewing
+                            ? examStates[currentQuestionIndex].isCorrect
+                              ? "correct"
+                              : "incorrect"
+                            : "selected"
+                          : ""
+                      }`}
+                      style={{
+                        cursor: examStates[currentQuestionIndex].isAnswered ? "not-allowed" : "pointer",
+                      }}>
+                      {option}
+                    </li>
+                  ))}
+                </ul>
+                <div className='exam-navigation'>
+                  {currentQuestionIndex > 0 && <button onClick={() => changeQuestion(-1)}>Sebelumnya</button>}
+                  {currentQuestionIndex < examStates.length - 1 ? (
+                    <button onClick={() => changeQuestion(1)}>Berikutnya</button>
+                  ) : (
+                    !isExamCompleted && <button onClick={handleFinishExam}>Selesai</button>
+                  )}
+                  {isExamCompleted && <button onClick={() => setShowResults(true)}>Lihat Hasil</button>}
+                </div>
 
-            {examStates[currentQuestionIndex].isAnswered && (
-              <div className='exam-feedback'>
-                {examStates[currentQuestionIndex].isCorrect ? (
-                  <p>Correct!</p>
-                ) : (
-                  <p>Incorrect! The correct answer is {examStates[currentQuestionIndex].correctAnswer}.</p>
-                )}
-              </div>
+                {examStates[currentQuestionIndex].isAnswered &&
+                  isReviewing && ( // Conditional feedback
+                    <div className='exam-feedback'>
+                      {examStates[currentQuestionIndex].isCorrect ? (
+                        <p>Benar!</p>
+                      ) : (
+                        <p>Salah! Jawaban yang benar adalah {examStates[currentQuestionIndex].correctAnswer}.</p>
+                      )}
+                    </div>
+                  )}
+              </>
             )}
           </div>
         )}
