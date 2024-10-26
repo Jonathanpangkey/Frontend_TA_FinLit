@@ -36,12 +36,6 @@ const HandsonPractice = () => {
     localStorage.setItem("handsOnData", JSON.stringify({expenses, incomeEntries, inputData}));
   }, [expenses, incomeEntries, inputData]);
 
-  const handleInputChange = (e) => {
-    const updatedData = [...inputData];
-    updatedData[currentStep] = e.target.value;
-    setInputData(updatedData);
-  };
-
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
@@ -114,9 +108,9 @@ const HandsonPractice = () => {
           <input type='text' placeholder='Nama Pengeluaran' value={expenseName} onChange={(e) => setExpenseName(e.target.value)} />
           <input type='number' placeholder='Jumlah Pengeluaran' value={expenseAmount} onChange={(e) => setExpenseAmount(e.target.value)} />
           <button onClick={addExpense}>Tambahkan Pengeluaran</button>
-          <ul>
+          <ul className='financial-list'>
             {expenses.map((expense, index) => (
-              <li key={index}>
+              <li key={index} className='expense'>
                 {expense.name}: {expense.amount}
                 <button onClick={() => deleteExpense(expense.id)}>x</button>
               </li>
@@ -130,11 +124,11 @@ const HandsonPractice = () => {
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId='expenses'>
             {(provided) => (
-              <ul {...provided.droppableProps} ref={provided.innerRef}>
+              <ul {...provided.droppableProps} ref={provided.innerRef} className='financial-list'>
                 {expenses.map((expense, index) => (
                   <Draggable key={expense.id} draggableId={expense.id} index={index}>
                     {(provided) => (
-                      <li ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                      <li className='expense' ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                         {expense.name}: {expense.amount}
                         <button onClick={() => deleteExpense(expense.id)}>x</button>
                       </li>
@@ -162,9 +156,9 @@ const HandsonPractice = () => {
           <input type='text' placeholder='Sumber Penghasilan' value={incomeSource} onChange={(e) => setIncomeSource(e.target.value)} />
           <input type='number' placeholder='Jumlah Penghasilan' value={incomeAmount} onChange={(e) => setIncomeAmount(e.target.value)} />
           <button onClick={addIncome}>Tambahkan Penghasilan</button>
-          <ul>
+          <ul className='financial-list'>
             {incomeEntries.map((income, index) => (
-              <li key={index}>
+              <li key={index} className='income'>
                 {income.source}: {income.amount}
                 <button onClick={() => deleteIncome(income.id)}>x</button>
               </li>
@@ -177,13 +171,13 @@ const HandsonPractice = () => {
       {/* Step 5: Compare Income and Expenses */}
       {currentStep === 4 && (
         <div>
-          <h4>Penghasilan: {totalIncome}</h4>
-          <h4>Pengeluaran: {totalExpenses}</h4>
-          {totalIncome > totalExpenses ? (
-            <h4>Status: Surplus! Anda bisa menabung atau berinvestasi.</h4>
-          ) : (
-            <h4>Status: Defisit. Anda perlu meninjau pengeluaran Anda.</h4>
-          )}
+          <p>
+            Penghasilan: <span className='income'>{totalIncome}</span>
+          </p>
+          <p>
+            Pengeluaran: <span className='expense'>-{totalExpenses}</span>
+          </p>
+          {totalIncome > totalExpenses ? <h4 className='income'>Status: Surplus!</h4> : <h4 className='expense'>Status: Defisit.</h4>}
         </div>
       )}
 
@@ -192,15 +186,13 @@ const HandsonPractice = () => {
         <div>
           {totalIncome > totalExpenses ? (
             <div>
-              <h4>Surplus</h4>
-              <p>Bila surplus, syukurlah. Maka nilai surplus ini, harus mulai Anda sisihkan di awal untuk diinvestasikan.</p>
+              <p>Syukurlah surplus. Maka nilai surplus ini, harus mulai Anda sisihkan di awal untuk diinvestasikan.</p>
             </div>
           ) : (
             <div>
-              <h4>Defisit</h4>
               <p>
-                Bila defisit, maka Anda wajib melakukan penghematan pengeluaran agar jumlah pengeluaran lebih kecil daripada jumlah penghasilan yang
-                Anda terima:
+                Waduh defisit, Anda wajib melakukan penghematan pengeluaran agar jumlah pengeluaran lebih kecil daripada jumlah penghasilan yang Anda
+                terima:
               </p>
               <ul>
                 <li>Jarangkan pos pengeluaran: Misalnya setiap minggu Anda menonton bioskop, maka sekarang lakukan setiap bulan.</li>

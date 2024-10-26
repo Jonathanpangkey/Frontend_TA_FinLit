@@ -34,11 +34,7 @@ function ContentDisplayPage() {
         } else if (quizId) {
           setViewingQuiz(true);
         } else {
-          // **Logika untuk hands-on** - hanya jika semua materi dan quiz selesai
-          const allMaterialsCompleted = sortedMaterials.every((material) => material.completed);
-          const allQuizzesCompleted = fetchedQuizzes.every((quiz) => quiz.completed);
-
-          if (subModuleId === "5" && allMaterialsCompleted && allQuizzesCompleted) {
+          if (subModuleId === "5") {
             setViewingHandson(true);
           }
         }
@@ -77,6 +73,7 @@ function ContentDisplayPage() {
     <>
       <Navbar />
       <div className='material-display'>
+        <button onClick={() => navigate("/")}>&#8592; Kembali</button>
         {viewingQuiz ? (
           <QuizContent quizzes={quizzes} quizId={quizId} subModuleId={subModuleId} />
         ) : viewingHandson ? (

@@ -1,10 +1,13 @@
 import React, {useState} from "react";
 import {fetchUserInfo} from "../api/User";
+import {useNavigate} from "react-router-dom";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -26,6 +29,21 @@ const Navbar = () => {
     }
   };
 
+  const handleToHandson = () => {
+    Swal.fire({
+      title: "Apakah Anda sudah menyelesaikan modul pengelolaan keuangan?",
+      text: "Pastikan Anda telah menyelesaikan semua materi dan quiz sebelum melanjutkan ke hands-on.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Ya, saya sudah selesai",
+      cancelButtonText: "Belum",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("submodule/5/handson");
+      }
+    });
+  };
+
   return (
     <nav className='navbar'>
       <div className='navbar-container'>
@@ -39,9 +57,8 @@ const Navbar = () => {
           <ul>
             <li>Tentang</li>
             <li>Deskripsi</li>
-            <li onClick={logout} style={{cursor: "pointer"}}>
-              Logout
-            </li>
+            <li onClick={handleToHandson}>Kelola Uang</li>
+            <li onClick={logout}>Logout</li>
           </ul>
         </div>
         <div className='navbar-profile' onClick={handleFetchUserInfo}>
