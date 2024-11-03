@@ -11,7 +11,7 @@ const MaterialContent = ({material, currentIndex, materials, onNavigateToMateria
   };
 
   const handleViewHandson = () => {
-    if (material?.orderNumber === materials[materials.length - 1]?.orderNumber && quizzes.length === 0) {
+    if (material?.orderNumber === materials[materials.length - 1]?.orderNumber) {
       onViewHandson(); // Trigger the view handson callback
     }
   };
@@ -63,14 +63,14 @@ const MaterialContent = ({material, currentIndex, materials, onNavigateToMateria
 
       {currentIndex === materials.length - 1 && quizzes.length > 0 && (
         <AnimatedMarkdownElement tag='button'>
-          <button onClick={handleViewQuiz}>Lihat Quiz</button>
+          <button onClick={handleViewQuiz}>Ambil Quiz</button>
         </AnimatedMarkdownElement>
       )}
 
       {/* Button Lanjut ke Hands-on jika tidak ada quiz */}
       {currentIndex === materials.length - 1 && subModuleId == 5 && (
         <AnimatedMarkdownElement tag='button'>
-          <button onClick={handleViewHandson}>Lanjut ke Hands-on</button>
+          <button onClick={handleViewHandson}>Latihan praktek</button>
         </AnimatedMarkdownElement>
       )}
 

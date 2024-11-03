@@ -55,8 +55,9 @@ const Navbar = () => {
         </div>
         <div className={`navbar-menu ${isOpen ? "open" : ""}`}>
           <ul>
-            <li>Tentang</li>
-            <li>Deskripsi</li>
+          <li onClick={() => navigate("/")}>Beranda</li>
+            <li onClick={() => navigate("/about")}>Tentang</li>
+            <li onClick={() => navigate("/description")}>Deskripsi</li>
             <li onClick={handleToHandson}>Kelola Uang</li>
             <li onClick={logout}>Logout</li>
           </ul>

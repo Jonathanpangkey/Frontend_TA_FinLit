@@ -5,6 +5,8 @@ import Home from "./pages/HomePage";
 import ContentDisplay from "./pages/ContentDisplayPage";
 import PrivateRoute from "./PrivateRoute";
 import ExamPage from "./pages/ExamPage";
+import AboutPage from "./pages/AboutPage";
+import DescriptionPage from "./pages/DescriptionPage";
 import "./App.css";
 
 function App() {
@@ -18,6 +20,8 @@ function App() {
         <Route path='/submodule/:subModuleId/quiz/:quizId' element={<PrivateRoute element={<ContentDisplay />} />} />
         <Route path='/submodule/:subModuleId/handson' element={<PrivateRoute element={<ContentDisplay />} />} />
         <Route path='/exam' element={<PrivateRoute element={<ExamPage />} />} />
+        <Route path='/about' element={<PrivateRoute element={<AboutPage />} />} />
+        <Route path='/description' element={<PrivateRoute element={<DescriptionPage />} />} />
       </Routes>
     </Router>
   );
