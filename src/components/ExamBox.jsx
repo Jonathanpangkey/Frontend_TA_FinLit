@@ -10,7 +10,6 @@ const ExamBox = ({modules, calculateProgress}) => {
   const [examBoxRef, isVisible] = useIntersectionObserver({threshold: 0.1});
   const [examStatus, setExamStatus] = useState(null);
   const [lastExamScore, setLastExamScore] = useState(null);
-  const [totalPossibleScore, setTotalPossibleScore] = useState(null);
   const [isExamLocked, setIsExamLocked] = useState(true);
 
   useEffect(() => {
@@ -18,8 +17,7 @@ const ExamBox = ({modules, calculateProgress}) => {
       try {
         const examProgress = await getExamProgress();
         setExamStatus(examProgress.examCompleted ? "completed" : "not completed");
-        setLastExamScore(examProgress.lastScore || 0);
-        setTotalPossibleScore(examProgress.totalPossibleScore || 0);
+        setLastExamScore(examProgress.lastScore || null);
 
         // Calculate progress
         calculateProgress(modules, examProgress.examCompleted);
@@ -35,7 +33,7 @@ const ExamBox = ({modules, calculateProgress}) => {
     };
 
     fetchExamStatus();
-  }, [calculateProgress]);
+  }, [calculateProgress, modules]);
 
   const navigateToExamPage = () => {
     Swal.fire({
@@ -61,12 +59,14 @@ const ExamBox = ({modules, calculateProgress}) => {
           <h3 onClick={() => navigateToExamPage()}>
             <i className='fa-solid fa-clipboard title-icon'></i> Ujian Akhir
           </h3>
-          {examStatus === "completed" && (
+          {examStatus === "completed" && <p>Ujian Selesai! Skor Anda: {lastExamScore} dari 100</p>}
+          {examStatus === "not completed" && (
             <p>
-              Ujian Selesai! Skor Anda: {lastExamScore} dari {totalPossibleScore}
+              {lastExamScore !== null
+                ? `Skor Anda: ${lastExamScore} dari 100. ${lastExamScore >= 80 ? "Belum lulus." : "Belum lulus."}`
+                : "Ujian belum diambil."}
             </p>
           )}
-          {examStatus === "not completed" && <p>Ujian Belum diambil atau belum tuntas</p>}
         </div>
         <div className='exam-toggle'>
           <i className={`fa-solid ${isOpen ? "fa-chevron-up" : "fa-chevron-down"}`}></i>

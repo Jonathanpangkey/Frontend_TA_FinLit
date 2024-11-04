@@ -15,8 +15,10 @@ const ExamPage = () => {
   const navigate = useNavigate();
 
   // Calculate the score and total possible score
-  const score = examStates.reduce((acc, examState, index) => acc + (examState.isCorrect ? exams[index].score : 0), 0);
-  const totalPossibleScore = exams.length * 10;
+  const correctAnswers = examStates.reduce((acc, examState) => acc + (examState.isCorrect ? 1 : 0), 0);
+  const totalQuestions = exams.length;
+  const score = (correctAnswers / totalQuestions) * 100;
+  const passingScore = 75;
 
   // Fetch exam data from API
   useEffect(() => {
@@ -97,19 +99,16 @@ const ExamPage = () => {
       setShowResults(true);
       setIsExamCompleted(true);
 
-      // Submit the score only if it passes the threshold
-      if (score >= totalPossibleScore) {
-        try {
-          console.log("Submitting the exam and updating progress...");
-          const examProgress = {
-            examCompleted: true,
-            lastScore: score,
-            totalPossibleScore: totalPossibleScore,
-          };
-          await completeExam(examProgress);
-        } catch (error) {
-          console.error("Failed to submit the exam and update progress.");
-        }
+      // Submit the score regardless of whether it passes the threshold
+      try {
+        console.log("Submitting the exam and updating progress...");
+        const examProgress = {
+          examCompleted: true,
+          lastScore: score,
+        };
+        await completeExam(examProgress);
+      } catch (error) {
+        console.error("Failed to submit the exam and update progress.");
       }
     }
   };
@@ -134,10 +133,8 @@ const ExamPage = () => {
         {showResults ? (
           <div className='exam-results'>
             <h3>Hasil Ujian</h3>
-            <p>
-              Skor Anda: {score} dari {totalPossibleScore}
-            </p>
-            {score < totalPossibleScore && <p style={{color: "red"}}>Anda tidak lulus ujian. Terus berlatih untuk meningkatkan skor Anda!</p>}
+            <p>Skor Anda: {score} dari 100</p>
+            {score < passingScore && <p style={{color: "red"}}>Anda tidak lulus ujian. Terus berlatih untuk meningkatkan skor Anda!</p>}
             <button onClick={handleReviewExam}>Tinjau Ujian</button>
             <button onClick={handleGoHome}>Kembali ke Beranda</button>
           </div>

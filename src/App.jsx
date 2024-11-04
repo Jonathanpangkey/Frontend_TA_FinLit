@@ -8,6 +8,8 @@ import ExamPage from "./pages/ExamPage";
 import AboutPage from "./pages/AboutPage";
 import DescriptionPage from "./pages/DescriptionPage";
 import "./App.css";
+import PrivateAdminRoute from "./PrivateAdminRoute";
+import AdminDashboard from "./pages/AdminPage";
 
 function App() {
   return (
@@ -22,6 +24,7 @@ function App() {
         <Route path='/exam' element={<PrivateRoute element={<ExamPage />} />} />
         <Route path='/about' element={<PrivateRoute element={<AboutPage />} />} />
         <Route path='/description' element={<PrivateRoute element={<DescriptionPage />} />} />
+        <Route path='/admin' element={<PrivateAdminRoute element={<AdminDashboard />} />} />
       </Routes>
     </Router>
   );

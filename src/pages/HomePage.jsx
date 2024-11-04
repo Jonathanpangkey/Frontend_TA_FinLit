@@ -41,6 +41,7 @@ function HomePage() {
 
     // Include the exam in the progress calculation
     totalItems += 1; // Assuming one exam
+    console.log("totalItems ", totalItems);
     completedItems += examCompleted ? 1 : 0;
 
     const progressPercentage = (completedItems / totalItems) * 100;

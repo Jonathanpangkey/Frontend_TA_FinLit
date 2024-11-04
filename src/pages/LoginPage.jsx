@@ -12,7 +12,8 @@ function LoginPage() {
     e.preventDefault();
     try {
       await login(email, password);
-      navigate("/"); // Redirect to dashboard after successful login
+      const role = localStorage.getItem("role");
+      navigate(role === "ADMIN" ? "/admin" : "/");
     } catch (error) {
       setError("Login gagal. Silakan periksa kredensial Anda.");
     }

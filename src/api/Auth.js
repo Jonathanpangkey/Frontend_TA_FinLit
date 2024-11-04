@@ -7,8 +7,10 @@ export const login = async (email, password) => {
       email,
       password,
     });
-    localStorage.setItem("firstName", response.data.firstname);
-    localStorage.setItem("token", response.data.token);
+    const {token, firstname, role} = response.data;
+    localStorage.setItem("firstName", firstname);
+    localStorage.setItem("token", token);
+    localStorage.setItem("role", role); // Save role (e.g., "admin" or "user")
   } catch (error) {
     console.error("Error when login:", error);
     throw error;
@@ -26,4 +28,3 @@ export const register = async (userData) => {
     throw error;
   }
 };
-
