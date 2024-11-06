@@ -10,6 +10,7 @@ import DescriptionPage from "./pages/DescriptionPage";
 import "./App.css";
 import PrivateAdminRoute from "./PrivateAdminRoute";
 import AdminDashboard from "./pages/AdminPage";
+import PreTestPage from "./pages/PreTestPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path='/submodule/:subModuleId/quiz/:quizId' element={<PrivateRoute element={<ContentDisplay />} />} />
         <Route path='/submodule/:subModuleId/handson' element={<PrivateRoute element={<ContentDisplay />} />} />
         <Route path='/exam' element={<PrivateRoute element={<ExamPage />} />} />
+        <Route path='/pre-test' element={<PrivateRoute element={<PreTestPage />} />} />
         <Route path='/about' element={<PrivateRoute element={<AboutPage />} />} />
         <Route path='/description' element={<PrivateRoute element={<DescriptionPage />} />} />
         <Route path='/admin' element={<PrivateAdminRoute element={<AdminDashboard />} />} />

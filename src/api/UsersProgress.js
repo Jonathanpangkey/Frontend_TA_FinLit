@@ -13,3 +13,15 @@ export const fetchUserProgress = async () => {
     throw error;
   }
 };
+
+export const fetchUserProgressById = async (userId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/user-progress/${userId}`, {
+      headers: getAuthHeader(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user progress data", error);
+    throw error;
+  }
+};

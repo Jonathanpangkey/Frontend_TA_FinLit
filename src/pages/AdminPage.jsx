@@ -38,9 +38,10 @@ function AdminDashboard() {
           <table>
             <thead>
               <tr>
-                <th>User ID</th>
+                <th>ID</th>
                 <th>Username</th>
-                <th>Overall Progress (%)</th>
+                <th>Post Test</th>
+                <th>Keseluruhan Progress (%)</th>
               </tr>
             </thead>
             <tbody>
@@ -48,6 +49,7 @@ function AdminDashboard() {
                 <tr key={user.userId}>
                   <td>{user.userId}</td>
                   <td>{user.userName}</td>
+                  <td>{user.examLastScore}</td>
                   <td>{user.overallProgressPercentage}%</td>
                 </tr>
               ))}

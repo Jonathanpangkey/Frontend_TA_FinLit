@@ -252,6 +252,7 @@ input {
 
 .progress-box {
   display: flex;
+  margin-bottom: 3rem;
   justify-content: space-around;
   align-items: center;
   border-radius: 20px;
@@ -650,7 +651,8 @@ label {
 }
 
 .admin-dashboard th {
-  background-color: #f2f2f2;
+  background-color: var(--orange);
+  color: var(--white);
   font-weight: bold;
 }
 

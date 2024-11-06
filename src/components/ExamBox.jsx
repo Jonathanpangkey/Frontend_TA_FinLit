@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import useIntersectionObserver from "../useIntersectionObserver";
 import {getExamProgress} from "../api/Exam";
 
-const ExamBox = ({modules, calculateProgress}) => {
+const ExamBox = ({modules}) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const [examBoxRef, isVisible] = useIntersectionObserver({threshold: 0.1});
@@ -19,9 +19,6 @@ const ExamBox = ({modules, calculateProgress}) => {
         setExamStatus(examProgress.examCompleted ? "completed" : "not completed");
         setLastExamScore(examProgress.lastScore || null);
 
-        // Calculate progress
-        calculateProgress(modules, examProgress.examCompleted);
-
         // Check if all modules and submodules are completed to unlock the exam
         const allModulesCompleted = modules.every((module) =>
           module.subModules.every((subModule) => subModule.completedMaterialsCount >= subModule.materials.length && subModule.quizCompleted)
@@ -33,7 +30,7 @@ const ExamBox = ({modules, calculateProgress}) => {
     };
 
     fetchExamStatus();
-  }, [calculateProgress, modules]);
+  }, [modules]);
 
   const navigateToExamPage = () => {
     Swal.fire({
@@ -63,7 +60,7 @@ const ExamBox = ({modules, calculateProgress}) => {
           {examStatus === "not completed" && (
             <p>
               {lastExamScore !== null
-                ? `Skor Anda: ${lastExamScore} dari 100. ${lastExamScore >= 80 ? "Belum lulus." : "Belum lulus."}`
+                ? `Skor Anda: ${lastExamScore} dari 100. ${lastExamScore >= 80 ? "Lulus." : "Belum lulus."}`
                 : "Ujian belum diambil."}
             </p>
           )}
