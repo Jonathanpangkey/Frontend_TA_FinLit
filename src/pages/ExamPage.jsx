@@ -12,6 +12,7 @@ const ExamPage = () => {
   const [isExamCompleted, setIsExamCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isReviewing, setIsReviewing] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(1800); // Set the time limit to 300 seconds (5 minutes)
   const navigate = useNavigate();
 
   // Calculate the score and total possible score
@@ -58,6 +59,19 @@ const ExamPage = () => {
     localStorage.setItem(`examStates`, JSON.stringify(examStates));
   }, [examStates]);
 
+  // Timer logic
+  useEffect(() => {
+    if (timeLeft > 0 && !isExamCompleted) {
+      const timer = setInterval(() => {
+        setTimeLeft((prevTime) => prevTime - 1);
+      }, 1000);
+
+      return () => clearInterval(timer);
+    } else if (timeLeft === 0) {
+      handleFinishExam(true); // Auto-submit when time is up
+    }
+  }, [timeLeft, isExamCompleted]);
+
   const handleOptionClick = (option) => {
     if (!examStates[currentQuestionIndex].isAnswered) {
       const selectedAnswer = option.trim().charAt(0);
@@ -85,31 +99,35 @@ const ExamPage = () => {
     }
   };
 
-  const handleFinishExam = async () => {
-    const result = await Swal.fire({
-      title: "Apakah Anda yakin?",
-      text: "Apakah Anda yakin ingin menyelesaikan ujian?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Ya, selesaikan!",
-      cancelButtonText: "Tidak, lanjutkan",
-    });
+  const handleFinishExam = async (autoSubmit = false) => {
+    if (!autoSubmit) {
+      const result = await Swal.fire({
+        title: "Apakah Anda yakin?",
+        text: "Apakah Anda yakin ingin menyelesaikan ujian?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ya, selesaikan!",
+        cancelButtonText: "Tidak, lanjutkan",
+      });
 
-    if (result.isConfirmed) {
-      setShowResults(true);
-      setIsExamCompleted(true);
-
-      // Submit the score regardless of whether it passes the threshold
-      try {
-        console.log("Submitting the exam and updating progress...");
-        const examProgress = {
-          examCompleted: true,
-          lastScore: score,
-        };
-        await completeExam(examProgress);
-      } catch (error) {
-        console.error("Failed to submit the exam and update progress.");
+      if (!result.isConfirmed) {
+        return;
       }
+    }
+
+    setShowResults(true);
+    setIsExamCompleted(true);
+
+    // Submit the score regardless of whether it passes the threshold
+    try {
+      console.log("Submitting the exam and updating progress...");
+      const examProgress = {
+        examCompleted: true,
+        lastScore: score,
+      };
+      await completeExam(examProgress);
+    } catch (error) {
+      console.error("Failed to submit the exam and update progress.");
     }
   };
 
@@ -122,6 +140,12 @@ const ExamPage = () => {
   const handleGoHome = () => {
     localStorage.removeItem(`examStates`);
     navigate("/");
+  };
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
   };
 
   if (loading) return <p>Memuat exam...</p>;
@@ -140,6 +164,9 @@ const ExamPage = () => {
           </div>
         ) : (
           <div>
+            <div className='exam-timer'>
+              <p>Sisa Waktu: {formatTime(timeLeft)}</p>
+            </div>
             {examStates.length > 0 && (
               <>
                 <h3>{examStates[currentQuestionIndex].question}</h3>
@@ -169,7 +196,7 @@ const ExamPage = () => {
                   {currentQuestionIndex < examStates.length - 1 ? (
                     <button onClick={() => changeQuestion(1)}>Berikutnya</button>
                   ) : (
-                    !isExamCompleted && <button onClick={handleFinishExam}>Selesai</button>
+                    !isExamCompleted && <button onClick={() => handleFinishExam()}>Selesai</button>
                   )}
                   {isExamCompleted && <button onClick={() => setShowResults(true)}>Lihat Hasil</button>}
                 </div>
