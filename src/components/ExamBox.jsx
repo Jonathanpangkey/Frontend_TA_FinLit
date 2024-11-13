@@ -48,9 +48,17 @@ const ExamBox = ({modules}) => {
 
   const navigateToExamPage = () => {
     Swal.fire({
-      title: "Apakah Anda yakin ingin mengambil ujian?",
-      text: "Pastikan Anda siap sebelum memulai ujian.",
-      icon: "warning",
+      title: "Informasi Penting Sebelum Mengambil Ujian",
+      html: `
+        <ul style="text-align: left;">
+          <li>Pastikan koneksi internet Anda stabil.</li>
+          <li>Anda memiliki waktu 30 menit untuk menyelesaikan ujian.</li>
+          <li>Jangan menutup atau memuat ulang halaman selama ujian berlangsung.</li>
+          <li>Pastikan Anda berada di tempat yang tenang dan bebas dari gangguan.</li>
+          <li>Setelah waktu habis, ujian akan otomatis diselesaikan.</li>
+        </ul>
+      `,
+      icon: "info",
       showCancelButton: true,
       confirmButtonText: "Ya, saya siap",
       cancelButtonText: "Tidak, belum siap",
@@ -136,10 +144,7 @@ const ExamBox = ({modules}) => {
       </div>
       {isOpen && (
         <div className='exam-content'>
-          <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolorum porro aperiam sint? Nulla, ipsa voluptatibus quis ab animi deserunt
-            perspiciatis.
-          </p>
+          <p>Ini adalah post test yang akan menguji pemahaman Anda setelah menyelesaikan semua materi. Pastikan Anda siap sebelum memulai.</p>
           {examStatus === "completed" && (
             <button className='get-certif' onClick={downloadCertificate}>
               Get Certificate
