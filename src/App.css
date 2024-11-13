@@ -572,6 +572,19 @@ blockquote {
   cursor: not-allowed;
 }
 
+button.get-certif {
+  background: green;
+  color: white;
+  padding: 7px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+button.get-certif:hover {
+  background: #4caf50;
+}
+
 /* Profile */
 /* .profil-head {
   text-align: center;

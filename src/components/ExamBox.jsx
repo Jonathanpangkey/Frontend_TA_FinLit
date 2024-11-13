@@ -3,6 +3,8 @@ import {useNavigate} from "react-router-dom";
 import Swal from "sweetalert2";
 import useIntersectionObserver from "../useIntersectionObserver";
 import {getExamProgress} from "../api/Exam";
+import {fetchUserInfo} from "../api/User"; // Import the API call
+import jsPDF from "jspdf"; // Import jsPDF
 
 const ExamBox = ({modules}) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,15 +13,16 @@ const ExamBox = ({modules}) => {
   const [examStatus, setExamStatus] = useState(null);
   const [lastExamScore, setLastExamScore] = useState(null);
   const [isExamLocked, setIsExamLocked] = useState(true);
+  const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
+    // Fetch exam status and unlock criteria
     const fetchExamStatus = async () => {
       try {
         const examProgress = await getExamProgress();
         setExamStatus(examProgress.examCompleted ? "completed" : "not completed");
         setLastExamScore(examProgress.lastScore || null);
 
-        // Check if all modules and submodules are completed to unlock the exam
         const allModulesCompleted = modules.every((module) =>
           module.subModules.every((subModule) => subModule.completedMaterialsCount >= subModule.materials.length && subModule.quizCompleted)
         );
@@ -29,7 +32,18 @@ const ExamBox = ({modules}) => {
       }
     };
 
+    // Fetch user information
+    const fetchUser = async () => {
+      try {
+        const data = await fetchUserInfo();
+        setUserInfo(data);
+      } catch (error) {
+        console.error("Error fetching user information:", error);
+      }
+    };
+
     fetchExamStatus();
+    fetchUser();
   }, [modules]);
 
   const navigateToExamPage = () => {
@@ -45,6 +59,57 @@ const ExamBox = ({modules}) => {
         navigate(`/exam`);
       }
     });
+  };
+
+  const downloadCertificate = () => {
+    const doc = new jsPDF("landscape", "pt", "a4");
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+
+    // Draw a border around the page
+    doc.setDrawColor(0); // Black color for border
+    doc.setLineWidth(3);
+    doc.rect(30, 30, pageWidth - 60, pageHeight - 60);
+
+    // Title
+    doc.setFontSize(30);
+    doc.setFont("helvetica", "bold");
+    doc.text("Certificate of Completion", pageWidth / 2, 100, {align: "center"});
+
+    // Subtitle
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "italic");
+    doc.text("This certifies that", pageWidth / 2, 160, {align: "center"});
+
+    // Recipient's Name
+    const recipientName = `${userInfo.firstname} ${userInfo.lastname}`;
+    doc.setFontSize(24);
+    doc.setFont("times", "bold");
+    doc.text(recipientName, pageWidth / 2, 200, {align: "center"});
+
+    // Certification Message
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "normal");
+    const certificateMessage = `has successfully completed the final exam with a score of ${lastExamScore}. This certifies their hard work and achievement.`;
+    doc.text(certificateMessage, pageWidth / 2, 250, {align: "center", maxWidth: pageWidth - 100});
+
+    // Add some decorative lines
+    doc.setLineWidth(0.5);
+    doc.line(pageWidth / 4, 280, (3 * pageWidth) / 4, 280);
+
+    // Date and Signature
+    doc.setFontSize(12);
+    doc.setFont("times", "normal");
+    const currentDate = new Date().toLocaleDateString();
+    doc.text(`Date: ${currentDate}`, 60, pageHeight - 100);
+    doc.text("Signature:", pageWidth - 160, pageHeight - 100);
+
+    // Optional placeholder for signature
+    doc.setLineWidth(1);
+    doc.line(pageWidth - 100, pageHeight - 110, pageWidth - 30, pageHeight - 110);
+
+    // Save the PDF
+    doc.save(`${userInfo.firstname} certificate.pdf`);
   };
 
   return (
@@ -75,6 +140,11 @@ const ExamBox = ({modules}) => {
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolorum porro aperiam sint? Nulla, ipsa voluptatibus quis ab animi deserunt
             perspiciatis.
           </p>
+          {examStatus === "completed" && (
+            <button className='get-certif' onClick={downloadCertificate}>
+              Get Certificate
+            </button>
+          )}
         </div>
       )}
     </div>
