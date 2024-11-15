@@ -1,12 +1,27 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import Swal from "sweetalert2";
-import useIntersectionObserver from "../useIntersectionObserver"; // Import the custom hook
+import useIntersectionObserver from "../useIntersectionObserver";
+import {completeQuiz, getObjectiveCompletionStatus} from "../api/Quiz"; // Import new API function
 
-const SubModule = ({subModule, previousSubModuleCompleted, isFirstSubmodule}) => {
+const SubModuleBox = ({subModule, previousSubModuleCompleted, isFirstSubmodule}) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [objectives, setObjectives] = useState([]); // For storing objective completion
   const [SubModuleBoxRef, isVisible] = useIntersectionObserver({threshold: 0.1});
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch the objective completion status for the submodule
+    const fetchObjectives = async () => {
+      try {
+        const objectiveCompletion = await getObjectiveCompletionStatus(subModule.id);
+        setObjectives(objectiveCompletion.objectiveCompletion);
+      } catch (error) {
+        console.error("Error fetching objectives:", error);
+      }
+    };
+    fetchObjectives();
+  }, [subModule.id]);
 
   const toggleOpen = () => setIsOpen(!isOpen);
 
@@ -73,10 +88,20 @@ const SubModule = ({subModule, previousSubModuleCompleted, isFirstSubmodule}) =>
       {isOpen && (
         <div className='submodule-content'>
           <p>{subModule.description}</p>
+          <div className='objectives-list'>
+            <h4>Learning Objectives:</h4>
+            <ul>
+              {subModule.learningObjectives.map((objective, index) => (
+                <li key={index} className={objectives[index] ? "completed-objective" : ""}>
+                  {objective} {objectives[index] ? "✓" : ""}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-export default SubModule;
+export default SubModuleBox;
