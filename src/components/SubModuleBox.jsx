@@ -1,29 +1,30 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Swal from "sweetalert2";
-import useIntersectionObserver from "../useIntersectionObserver";
-import {completeQuiz, getObjectiveCompletionStatus} from "../api/Quiz"; // Import new API function
+import useIntersectionObserver from "../useIntersectionObserver"; // Import the custom hook
+import {fetchLearningObjectivesWithQuizCompletion} from "../api/LearningObj";
 
 const SubModuleBox = ({subModule, previousSubModuleCompleted, isFirstSubmodule}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [objectives, setObjectives] = useState([]); // For storing objective completion
   const [SubModuleBoxRef, isVisible] = useIntersectionObserver({threshold: 0.1});
+  const [learningObjectives, setLearningObjectives] = useState([]);
   const navigate = useNavigate();
 
+  const toggleOpen = () => setIsOpen(!isOpen);
+
   useEffect(() => {
-    // Fetch the objective completion status for the submodule
     const fetchObjectives = async () => {
       try {
-        const objectiveCompletion = await getObjectiveCompletionStatus(subModule.id);
-        setObjectives(objectiveCompletion.objectiveCompletion);
+        const objectives = await fetchLearningObjectivesWithQuizCompletion(subModule.id);
+        setLearningObjectives(objectives);
       } catch (error) {
-        console.error("Error fetching objectives:", error);
+        console.error("Error fetching learning objectives:", error);
       }
     };
-    fetchObjectives();
-  }, [subModule.id]);
 
-  const toggleOpen = () => setIsOpen(!isOpen);
+    fetchObjectives();
+    console.log(subModule);
+  }, [subModule.id]);
 
   const handleNavigation = () => {
     if (subModule.materials.length > 0) {
@@ -64,8 +65,7 @@ const SubModuleBox = ({subModule, previousSubModuleCompleted, isFirstSubmodule})
   const totalMaterials = subModule.materials.length;
   const completedMaterialsCount = subModule.completedMaterialsCount || 0;
   const quizCompleted = subModule.quizCompleted;
-
-  const isCompleted = completedMaterialsCount === totalMaterials && quizCompleted;
+  const isCompleted = completedMaterialsCount === totalMaterials && subModule.quizCompleted;
   const isLocked = !isFirstSubmodule && !previousSubModuleCompleted;
 
   return (
@@ -78,7 +78,7 @@ const SubModuleBox = ({subModule, previousSubModuleCompleted, isFirstSubmodule})
             <i className='fa-solid fa-book title-icon'></i> {subModule.name}
           </h3>
           <p>
-            {completedMaterialsCount}/{totalMaterials} Selesai {quizCompleted ? "(Kuis Selesai)" : "(Kuis Belum Selesai)"}
+            Materi {completedMaterialsCount}/{totalMaterials} Selesai {quizCompleted ? "(Kuis Selesai)" : "(Kuis Belum Selesai)"}
           </p>
         </div>
         <div className='submodule-toggle'>
@@ -88,16 +88,20 @@ const SubModuleBox = ({subModule, previousSubModuleCompleted, isFirstSubmodule})
       {isOpen && (
         <div className='submodule-content'>
           <p>{subModule.description}</p>
-          <div className='objectives-list'>
-            <h4>Learning Objectives:</h4>
-            <ul>
-              {subModule.learningObjectives.map((objective, index) => (
-                <li key={index} className={objectives[index] ? "completed-objective" : ""}>
-                  {objective} {objectives[index] ? "✓" : ""}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Display learning objectives */}
+          <h4>Learning Objectives:</h4>
+          <ul>
+            {learningObjectives.map((objective) => (
+              <li key={objective.id} style={{listStyleType: "disc", marginLeft: "20px"}}>
+                {objective.objectiveDescription}{" "}
+                <span>
+                  <i
+                    style={{color: objective.quizCompleted ? "green" : "red"}}
+                    className={`fa ${objective.quizCompleted ? "fa-check-circle" : "fa-times-circle"}`}></i>
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
