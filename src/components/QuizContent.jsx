@@ -69,14 +69,11 @@ const Quiz = ({quizzes, subModuleId}) => {
       setShowResults(true);
       setIsQuizCompleted(true);
 
-      // Submit the score only if it passes the threshold
-      if (score >= totalPossibleScore) {
-        try {
-          console.log("Submitting the quiz");
-          await completeQuiz(subModuleId);
-        } catch (error) {
-          console.error("Failed to submit the quiz");
-        }
+      try {
+        const completionPromises = quizzes.map((quiz, index) => (quizStates[index].isCorrect ? completeQuiz(quiz.id) : null));
+        await Promise.all(completionPromises);
+      } catch (error) {
+        console.error("Failed to submit quiz completions:", error);
       }
     }
   };
