@@ -3,8 +3,8 @@ import {useNavigate} from "react-router-dom";
 import Swal from "sweetalert2";
 import useIntersectionObserver from "../useIntersectionObserver";
 import {getExamProgress} from "../api/Exam";
-import {fetchUserInfo} from "../api/User"; // Import the API call
-import jsPDF from "jspdf"; // Import jsPDF
+import {fetchUserInfo} from "../api/User";
+import jsPDF from "jspdf";
 
 const ExamBox = ({modules}) => {
   const [isOpen, setIsOpen] = useState(false);

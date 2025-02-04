@@ -27,9 +27,18 @@ const PreTestBox = () => {
 
   const navigateToPreTestPage = () => {
     Swal.fire({
-      title: "Apakah Anda yakin ingin mengambil pre-test?",
-      text: "Pastikan Anda siap sebelum memulai pre-test.",
-      icon: "warning",
+      title: "Informasi Penting Sebelum Mengambil Pre-Test",
+      html: `
+        <p>Pre-test ini bertujuan untuk mengukur pemahaman awal Anda. Jika skor Anda sudah tinggi, Anda mungkin tidak perlu melanjutkan ke materi.</p>
+        <ul style="text-align: left;">
+          <li>Pastikan koneksi internet Anda stabil.</li>
+          <li>Anda memiliki waktu 30 menit untuk menyelesaikan pre-test.</li>
+          <li>Jangan menutup atau memuat ulang halaman selama pre-test berlangsung.</li>
+          <li>Pastikan Anda berada di tempat yang tenang dan bebas dari gangguan.</li>
+          <li>Setelah waktu habis, pre-test akan otomatis diselesaikan.</li>
+        </ul>
+      `,
+      icon: "info",
       showCancelButton: true,
       confirmButtonText: "Ya, saya siap",
       cancelButtonText: "Tidak, belum siap",
@@ -50,7 +59,7 @@ const PreTestBox = () => {
           {preTestStatus === "completed" && <p>Pre-Test Selesai! Skor Anda: {lastPreTestScore} dari 100</p>}
           {preTestStatus === "not completed" && (
             <p>
-              {lastPreTestScore !== null
+              {lastPreTestScore !== null && lastPreTestScore !== undefined
                 ? `Skor Anda: ${lastPreTestScore} dari 100. ${lastPreTestScore >= 80 ? "Lulus." : "Belum lulus."}`
                 : "Pre-Test belum diambil."}
             </p>

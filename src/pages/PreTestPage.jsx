@@ -12,6 +12,7 @@ const PreTestPage = () => {
   const [isPreTestCompleted, setIsPreTestCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isReviewing, setIsReviewing] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(100); // Set the time limit to 1800 seconds (30 minutes)
   const navigate = useNavigate();
 
   // Calculate the score and total possible score
@@ -58,6 +59,19 @@ const PreTestPage = () => {
     localStorage.setItem(`preTestStates`, JSON.stringify(preTestStates));
   }, [preTestStates]);
 
+  // Timer logic
+  useEffect(() => {
+    if (timeLeft > 0 && !isPreTestCompleted) {
+      const timer = setInterval(() => {
+        setTimeLeft((prevTime) => prevTime - 1);
+      }, 1000);
+
+      return () => clearInterval(timer);
+    } else if (timeLeft === 0) {
+      handleFinishPreTest(true); // Auto-submit when time is up
+    }
+  }, [timeLeft, isPreTestCompleted]);
+
   const handleOptionClick = (option) => {
     if (!preTestStates[currentQuestionIndex].isAnswered) {
       const selectedAnswer = option.trim().charAt(0);
@@ -85,31 +99,35 @@ const PreTestPage = () => {
     }
   };
 
-  const handleFinishPreTest = async () => {
-    const result = await Swal.fire({
-      title: "Apakah Anda yakin?",
-      text: "Apakah Anda yakin ingin menyelesaikan pre-test?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Ya, selesaikan!",
-      cancelButtonText: "Tidak, lanjutkan",
-    });
+  const handleFinishPreTest = async (autoSubmit = false) => {
+    if (!autoSubmit) {
+      const result = await Swal.fire({
+        title: "Apakah Anda yakin?",
+        text: "Apakah Anda yakin ingin menyelesaikan pre-test?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ya, selesaikan!",
+        cancelButtonText: "Tidak, lanjutkan",
+      });
 
-    if (result.isConfirmed) {
-      setShowResults(true);
-      setIsPreTestCompleted(true);
-
-      // Submit the score regardless of whether it passes the threshold
-      try {
-        console.log("Submitting the pre-test and updating progress...");
-        const preTestProgress = {
-          preTestCompleted: true,
-          lastScore: score,
-        };
-        await completePreTest(preTestProgress);
-      } catch (error) {
-        console.error("Failed to submit the pre-test and update progress.");
+      if (!result.isConfirmed) {
+        return;
       }
+    }
+
+    setShowResults(true);
+    setIsPreTestCompleted(true);
+
+    // Submit the score regardless of whether it passes the threshold
+    try {
+      console.log("Submitting the pre-test and updating progress...");
+      const preTestProgress = {
+        preTestCompleted: true,
+        lastScore: score,
+      };
+      await completePreTest(preTestProgress);
+    } catch (error) {
+      console.error("Failed to submit the pre-test and update progress.");
     }
   };
 
@@ -122,6 +140,12 @@ const PreTestPage = () => {
   const handleGoHome = () => {
     localStorage.removeItem(`preTestStates`);
     navigate("/");
+  };
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
   };
 
   if (loading) return <p>Memuat pre-test...</p>;
@@ -140,6 +164,9 @@ const PreTestPage = () => {
           </div>
         ) : (
           <div>
+            <div className='exam-timer'>
+              <p>Sisa Waktu: {formatTime(timeLeft)}</p>
+            </div>
             {preTestStates.length > 0 && (
               <>
                 <h3>{preTestStates[currentQuestionIndex].question}</h3>
@@ -169,7 +196,7 @@ const PreTestPage = () => {
                   {currentQuestionIndex < preTestStates.length - 1 ? (
                     <button onClick={() => changeQuestion(1)}>Berikutnya</button>
                   ) : (
-                    !isPreTestCompleted && <button onClick={handleFinishPreTest}>Selesai</button>
+                    !isPreTestCompleted && <button onClick={() => handleFinishPreTest()}>Selesai</button>
                   )}
                   {isPreTestCompleted && <button onClick={() => setShowResults(true)}>Lihat Hasil</button>}
                 </div>

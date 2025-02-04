@@ -87,8 +87,6 @@ const SubModuleBox = ({subModule, previousSubModuleCompleted, isFirstSubmodule})
       </div>
       {isOpen && (
         <div className='submodule-content'>
-          <p>{subModule.description}</p>
-          {/* Display learning objectives */}
           <h4>Learning Objectives:</h4>
           <ul>
             {learningObjectives.map((objective) => (

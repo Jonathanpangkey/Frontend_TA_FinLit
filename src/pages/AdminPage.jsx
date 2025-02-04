@@ -45,14 +45,16 @@ function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {sortedUserProgress.map((user) => (
-                <tr key={user.userId}>
-                  <td>{user.userId}</td>
-                  <td>{user.userName}</td>
-                  <td>{user.examLastScore}</td>
-                  <td>{user.overallProgressPercentage}%</td>
-                </tr>
-              ))}
+              {sortedUserProgress
+                .filter((user) => user.userName !== "Admin") // Exclude admin user
+                .map((user) => (
+                  <tr key={user.userId}>
+                    <td>{user.userId}</td>
+                    <td>{user.userName}</td>
+                    <td>{user.examLastScore}</td>
+                    <td>{user.overallProgressPercentage}%</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         )}
