@@ -4,13 +4,60 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Offline</title>
-    <link rel="stylesheet" crossorigin href="/assets/index-DuchXbVS.css" />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+      }
+      .container {
+        text-align: center;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+      }
+      h2 {
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+      p {
+        color: #666;
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+      .btn {
+        background: linear-gradient(90deg, rgba(255, 157, 0, 0.62) 0%, rgba(252, 163, 19, 1) 50%, rgba(249, 168, 38, 0.62) 100%);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 16px;
+        color: white;
+        transition: background 0.3s ease;
+      }
+      .btn:hover {
+        background: linear-gradient(90deg, rgba(252, 163, 19, 0.62) 0%, rgba(249, 168, 38, 1) 50%, rgba(246, 175, 57, 0.62) 100%);
+      }
+      .icon-offline {
+        font-size: 50px;
+        color: #f44336;
+        margin-bottom: 15px;
+      }
+    </style>
   </head>
   <body>
     <div class="container home-container">
       <h2>Ooopss!! Anda sedang offline</h2>
       <p>Konten ini tidak tersedia saat Anda offline. Silakan periksa koneksi internet Anda dan coba lagi.</p>
-      <button onClick="{handleGoBack}" class="btn">Kembali ke Halaman Utama</button>
+      <button onClick="window.history.back()" class="btn">Kembali ke Halaman Utama</button>
     </div>
   </body>
 </html>
