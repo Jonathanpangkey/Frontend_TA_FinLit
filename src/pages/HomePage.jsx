@@ -11,6 +11,8 @@ import PreTestBox from "../components/PreTestBox";
 function HomePage() {
   const [modules, setModules] = useState([]);
   const [progress, setProgress] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const firstName = localStorage.getItem("firstName");
 
   useEffect(() => {
@@ -28,8 +30,11 @@ function HomePage() {
           const userProgress = await fetchUserProgressById(userInfo.id);
           setProgress(userProgress.overallProgressPercentage);
         }
+        setLoading(false);
       } catch (error) {
         console.error("Error loading data:", error);
+        setError("Failed to load data. Please check your internet connection.");
+        setLoading(false);
       }
     };
 
@@ -41,19 +46,27 @@ function HomePage() {
       <Navbar />
       <div className='container home-container'>
         <ProgressSection percentage={progress} firstName={firstName} />
-        <PreTestBox />
-        {modules.map((module, index) => {
-          const previousModuleCompleted =
-            index === 0
-              ? true
-              : modules[index - 1].subModules.every((subModule) => {
-                  return subModule.completedMaterialsCount >= subModule.materials.length && subModule.quizCompleted;
-                });
+        {loading ? (
+          <p>Loading data, please wait...</p>
+        ) : (
+          <>
+            <PreTestBox />
+            {modules.map((module, index) => {
+              const previousModuleCompleted =
+                index === 0
+                  ? true
+                  : modules[index - 1].subModules.every((subModule) => {
+                      return subModule.completedMaterialsCount >= subModule.materials.length && subModule.quizCompleted;
+                    });
 
-          return <SubmoduleSection key={module.id} module={module} isFirstModule={index === 0} previousModuleCompleted={previousModuleCompleted} />;
-        })}
-        <h3 className='section-title'>Ujian Akhir</h3>
-        <ExamBox modules={modules} />
+              return (
+                <SubmoduleSection key={module.id} module={module} isFirstModule={index === 0} previousModuleCompleted={previousModuleCompleted} />
+              );
+            })}
+            <h3 className='section-title'>Ujian Akhir</h3>
+            <ExamBox modules={modules} />
+          </>
+        )}
       </div>
     </>
   );
