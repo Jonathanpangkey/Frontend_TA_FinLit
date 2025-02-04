@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" />
     <title>Offline</title>
     <style>
       body {
@@ -46,15 +47,15 @@
       .btn:hover {
         background: linear-gradient(90deg, rgba(252, 163, 19, 0.62) 0%, rgba(249, 168, 38, 1) 50%, rgba(246, 175, 57, 0.62) 100%);
       }
-      .icon-offline {
-        font-size: 50px;
-        color: #f44336;
-        margin-bottom: 15px;
+      .offline-icon {
+        width: 70px;
+        margin-bottom: 20px;
       }
     </style>
   </head>
   <body>
     <div class="container home-container">
+      <img class="offline-icon" src="/public/img/offline-icon.png" alt="" />
       <h2>Ooopss!! Anda sedang offline</h2>
       <p>Konten ini tidak tersedia saat Anda offline. Silakan periksa koneksi internet Anda dan coba lagi.</p>
       <button onClick="window.history.back()" class="btn">Kembali ke Halaman Utama</button>
