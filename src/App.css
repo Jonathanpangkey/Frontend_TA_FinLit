@@ -313,11 +313,11 @@ input {
   transform: translateY(0);
 }
 
-/* .submodule-box.locked,
+.submodule-box.locked,
 .exam-box.locked {
   opacity: 0.5;
   pointer-events: none;
-} */
+}
 
 .submodule-box.completed,
 .exam-box.completed {
