@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom";
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -32,7 +33,19 @@ function LoginPage() {
               <p>{error}</p>
             </div>
             <input type='email' name='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} required />
-            <input type='password' name='password' placeholder='Kata Sandi' value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <div className='password-container'>
+              <input
+                type={showPassword ? "text" : "password"}
+                name='password'
+                placeholder='Kata Sandi'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button type='button' className='show-hide-btn' onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <i class='fa-regular fa-eye'></i> : <i class='fa-regular fa-eye-slash'></i>}
+              </button>
+            </div>
             <p>
               <a href='#'>Lupa kata sandi?</a>
             </p>

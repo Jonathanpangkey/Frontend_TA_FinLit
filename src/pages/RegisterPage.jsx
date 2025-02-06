@@ -8,6 +8,8 @@ function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -50,15 +52,32 @@ function RegisterPage() {
             <input type='text' name='firstName' placeholder='Nama Depan' value={firstname} onChange={(e) => setFirstName(e.target.value)} required />
             <input type='text' name='lastName' placeholder='Nama Belakang' value={lastname} onChange={(e) => setLastName(e.target.value)} required />
             <input type='email' name='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} required />
-            <input type='password' name='password' placeholder='Kata Sandi' value={password} onChange={(e) => setPassword(e.target.value)} required />
-            <input
-              type='password'
-              name='confirmPassword'
-              placeholder='Konfirmasi Kata Sandi'
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
+            <div className='password-container'>
+              <input
+                type={showPassword ? "text" : "password"}
+                name='password'
+                placeholder='Kata Sandi'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button type='button' className='show-hide-btn' onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <i class='fa-regular fa-eye'></i> : <i class='fa-regular fa-eye-slash'></i>}
+              </button>
+            </div>
+            <div className='password-container'>
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name='confirmPassword'
+                placeholder='Konfirmasi Kata Sandi'
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+              <button type='button' className='show-hide-btn' onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                {showConfirmPassword ? <i class='fa-regular fa-eye'></i> : <i class='fa-regular fa-eye-slash'></i>}
+              </button>
+            </div>
             <button className='btn auth-btn' type='submit'>
               Daftar
             </button>
