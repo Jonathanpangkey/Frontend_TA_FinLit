@@ -12,7 +12,7 @@ const PreTestPage = () => {
   const [isPreTestCompleted, setIsPreTestCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isReviewing, setIsReviewing] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(100); // Set the time limit to 1800 seconds (30 minutes)
+  const [timeLeft, setTimeLeft] = useState(1500); // Set the time limit to 1500 seconds (25 minutes)
   const navigate = useNavigate();
 
   // Calculate the score and total possible score

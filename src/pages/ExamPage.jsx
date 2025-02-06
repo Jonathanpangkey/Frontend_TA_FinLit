@@ -12,7 +12,7 @@ const ExamPage = () => {
   const [isExamCompleted, setIsExamCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isReviewing, setIsReviewing] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(1800); // Set the time limit to 300 seconds (5 minutes)
+  const [timeLeft, setTimeLeft] = useState(1800); 
   const navigate = useNavigate();
 
   // Calculate the score and total possible score
