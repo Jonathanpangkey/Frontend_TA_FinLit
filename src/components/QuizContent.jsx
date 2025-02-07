@@ -33,6 +33,10 @@ const Quiz = ({quizzes, subModuleId}) => {
   }, [quizStates]);
 
   const handleOptionClick = (option) => {
+    if (isReviewing || quizStates[currentQuizIndex].isAnswered) {
+      return; // 🚨 Mencegah perubahan jawaban jika sedang review atau sudah dijawab
+    }
+
     const selectedAnswer = option.trim().charAt(0);
     const correctAnswer = quizzes[currentQuizIndex].correctAnswer.trim();
     const isCorrect = selectedAnswer === correctAnswer;
