@@ -5,7 +5,7 @@ import {getQuizzesBySubModuleId} from "../api/Quiz";
 import Navbar from "../components/Navbar";
 import MaterialContent from "../components/MaterialContent";
 import QuizContent from "../components/QuizContent";
-import HandsonPractice from "../components/HandsonPractice"; // import the new component
+import HandsonPractice from "../components/HandsonPractice";
 
 function ContentDisplayPage() {
   const {subModuleId, materialId, quizId} = useParams();
@@ -13,11 +13,13 @@ function ContentDisplayPage() {
   const [currentMaterial, setCurrentMaterial] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
   const [viewingQuiz, setViewingQuiz] = useState(false);
-  const [viewingHandson, setViewingHandson] = useState(false); // new state for hands-on
+  const [viewingHandson, setViewingHandson] = useState(false);
+  const [loading, setLoading] = useState(true); // ✅ Tambahkan state loading
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true); // ✅ Set loading ke true sebelum fetch data
       try {
         const [fetchedMaterials, fetchedQuizzes] = await Promise.all([getMaterialsBySubModuleId(subModuleId), getQuizzesBySubModuleId(subModuleId)]);
 
@@ -25,7 +27,6 @@ function ContentDisplayPage() {
         setMaterials(sortedMaterials);
         setQuizzes(fetchedQuizzes);
 
-        // Menentukan material atau quiz yang dilihat berdasarkan URL params
         if (materialId) {
           const fetchedMaterial = await getMaterialById(materialId);
           setCurrentMaterial(fetchedMaterial);
@@ -33,30 +34,27 @@ function ContentDisplayPage() {
           setViewingHandson(false);
         } else if (quizId) {
           setViewingQuiz(true);
-        } else {
-          if (subModuleId === "5") {
-            setViewingHandson(true);
-          }
+        } else if (subModuleId === "5") {
+          setViewingHandson(true);
         }
       } catch (error) {
         console.error("Failed to fetch data:", error);
+      } finally {
+        setLoading(false); // ✅ Set loading ke false setelah fetch data selesai
       }
     };
 
     fetchData();
   }, [subModuleId, materialId, quizId]);
 
-  // Menghitung current index material berdasarkan materialId
   const currentIndex = useMemo(() => materials.findIndex((material) => material.id === parseInt(materialId)), [materials, materialId]);
 
-  // Fungsi navigasi untuk material berikutnya/sebelumnya
   const handleNavigateToMaterial = (targetIndex) => {
     navigate(`/submodule/${subModuleId}/material/${materials[targetIndex].id}`);
     setViewingQuiz(false);
-    setViewingHandson(false); // pastikan hands-on disembunyikan saat berpindah material
+    setViewingHandson(false);
   };
 
-  // Fungsi untuk melihat quiz
   const handleViewQuiz = () => {
     if (quizzes.length > 0) {
       navigate(`/submodule/${subModuleId}/quiz/${quizzes[0].id}`);
@@ -65,8 +63,8 @@ function ContentDisplayPage() {
   };
 
   const handleViewHandson = () => {
-    setViewingHandson(true); // Set state untuk menampilkan Hands-on
-    navigate(`/submodule/${subModuleId}/handson`); // Navigasi secara eksplisit
+    setViewingHandson(true);
+    navigate(`/submodule/${subModuleId}/handson`);
   };
 
   return (
@@ -74,10 +72,14 @@ function ContentDisplayPage() {
       <Navbar />
       <div className='material-display'>
         <button onClick={() => navigate("/")}>&#8592; Kembali</button>
-        {viewingQuiz ? (
+
+        {/* ✅ Tampilkan loading sebelum menampilkan konten */}
+        {loading ? (
+          <p>Loading...</p>
+        ) : viewingQuiz ? (
           <QuizContent quizzes={quizzes} quizId={quizId} subModuleId={subModuleId} />
         ) : viewingHandson ? (
-          <HandsonPractice /> // tampilkan hands-on practice di sini
+          <HandsonPractice />
         ) : currentMaterial ? (
           <MaterialContent
             material={currentMaterial}
@@ -90,7 +92,7 @@ function ContentDisplayPage() {
             subModuleId={subModuleId}
           />
         ) : (
-          <p>Loading material...</p>
+          <p>Material tidak ditemukan.</p>
         )}
       </div>
     </>
