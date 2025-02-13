@@ -711,6 +711,20 @@ label {
   text-align: center;
 }
 
+.add-material {
+  border: none;
+  background-color: var(--orange);
+  padding: 10px;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-material:hover {
+  background-color: orange;
+}
+
 @media screen and (max-width: 900px) {
   .progress-box {
     padding: 20px;

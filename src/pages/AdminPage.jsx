@@ -31,6 +31,7 @@ function AdminDashboard() {
     <>
       <Navbar />
       <div className='admin-dashboard'>
+        {/* <button className='add-material'>Add +</button> */}
         <h2>Admin Dashboard</h2>
         {loading && <p className='loading'>Loading user progress data...</p>}
         {error && <p className='error'>{error}</p>}

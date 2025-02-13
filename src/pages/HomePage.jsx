@@ -21,8 +21,8 @@ function HomePage() {
         // Fetch user info to get userId
         const userInfo = await fetchUserInfo();
 
-        // Fetch modules
-        const modulesData = await fetchModules();
+        // Fetch modules with user-specific progress
+        const modulesData = await fetchModules(userInfo.id);
         setModules(modulesData);
 
         if (userInfo.id) {

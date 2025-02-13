@@ -1,1 +1,1 @@
-export const API_BASE_URL = "https://api.apifinlit.tech/api";
+export const API_BASE_URL = "http://localhost:8080/api";
