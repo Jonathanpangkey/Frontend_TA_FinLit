@@ -7,16 +7,20 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // Add loading state
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true when the form is submitted
     try {
       await login(email, password);
       const role = localStorage.getItem("role");
       navigate(role === "ADMIN" ? "/admin" : "/");
     } catch (error) {
       setError("Login gagal. Silakan periksa kredensial Anda.");
+    } finally {
+      setLoading(false); // Set loading to false after the process is complete
     }
   };
 
@@ -43,14 +47,14 @@ function LoginPage() {
                 required
               />
               <button type='button' className='show-hide-btn' onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? <i class='fa-regular fa-eye'></i> : <i class='fa-regular fa-eye-slash'></i>}
+                {showPassword ? <i className='fa-regular fa-eye'></i> : <i className='fa-regular fa-eye-slash'></i>}
               </button>
             </div>
             <p>
               <a href='#'>Lupa kata sandi?</a>
             </p>
-            <button className='btn auth-btn' type='submit'>
-              Masuk
+            <button className='btn auth-btn' type='submit' disabled={loading}>
+              {loading ? "Loading..." : "Masuk"}
             </button>
             <div>
               <p>

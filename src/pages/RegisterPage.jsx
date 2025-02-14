@@ -11,6 +11,7 @@ function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // Add loading state
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -19,6 +20,7 @@ function RegisterPage() {
       setError("Passwords do not match");
       return;
     }
+    setLoading(true); // Set loading to true when the form is submitted
     const userData = {
       firstname,
       lastname,
@@ -33,6 +35,8 @@ function RegisterPage() {
     } catch (error) {
       console.error("Registration failed:", error);
       setError("Registration failed. Please try again.");
+    } finally {
+      setLoading(false); // Set loading to false after the process is complete
     }
   };
 
@@ -62,7 +66,7 @@ function RegisterPage() {
                 required
               />
               <button type='button' className='show-hide-btn' onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? <i class='fa-regular fa-eye'></i> : <i class='fa-regular fa-eye-slash'></i>}
+                {showPassword ? <i className='fa-regular fa-eye'></i> : <i className='fa-regular fa-eye-slash'></i>}
               </button>
             </div>
             <div className='password-container'>
@@ -75,11 +79,11 @@ function RegisterPage() {
                 required
               />
               <button type='button' className='show-hide-btn' onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                {showConfirmPassword ? <i class='fa-regular fa-eye'></i> : <i class='fa-regular fa-eye-slash'></i>}
+                {showConfirmPassword ? <i className='fa-regular fa-eye'></i> : <i className='fa-regular fa-eye-slash'></i>}
               </button>
             </div>
-            <button className='btn auth-btn' type='submit'>
-              Daftar
+            <button className='btn auth-btn' type='submit' disabled={loading}>
+              {loading ? "Loading..." : "Daftar"}
             </button>
             <div>
               <p>
