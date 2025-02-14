@@ -50,9 +50,6 @@ function LoginPage() {
                 {showPassword ? <i className='fa-regular fa-eye'></i> : <i className='fa-regular fa-eye-slash'></i>}
               </button>
             </div>
-            <p>
-              <a href='#'>Lupa kata sandi?</a>
-            </p>
             <button className='btn auth-btn' type='submit' disabled={loading}>
               {loading ? "Loading..." : "Masuk"}
             </button>
