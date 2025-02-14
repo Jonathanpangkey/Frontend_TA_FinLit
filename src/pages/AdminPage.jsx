@@ -1,21 +1,32 @@
-import React, {useEffect, useState} from "react";
+import React, {useState, useEffect} from "react";
 import {fetchUserProgress} from "../api/UsersProgress";
+import {fetchSubmodules} from "../api/Submodules"; // Add this API
+import {addResource} from "../api/Resources"; // Add this API
 import Navbar from "../components/Navbar";
 
 function AdminDashboard() {
   const [userProgress, setUserProgress] = useState([]);
+  const [submodules, setSubmodules] = useState([]); // State for submodules
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [resourceForm, setResourceForm] = useState({
+    subModuleId: "",
+    title: "",
+    type: "",
+    url: "",
+  });
+  const [showForm, setShowForm] = useState(false); // State to manage form visibility
 
   useEffect(() => {
-    // Fetch user progress data from the backend
     const fetchData = async () => {
       try {
-        const data = await fetchUserProgress();
-        setUserProgress(data);
+        const progressData = await fetchUserProgress();
+        const submoduleData = await fetchSubmodules(); // Fetch submodules
+        setUserProgress(progressData);
+        setSubmodules(submoduleData);
         setLoading(false);
       } catch (err) {
-        setError("Failed to fetch user progress data.");
+        setError("Failed to fetch data.");
         setLoading(false);
       }
     };
@@ -23,42 +34,95 @@ function AdminDashboard() {
     fetchData();
   }, []);
 
-  // Sort userProgress by userId
-  const sortedUserProgress = userProgress.sort((a, b) => a.userId - b.userId);
+  const handleAddResource = async (e) => {
+    e.preventDefault();
+    try {
+      await addResource(resourceForm.subModuleId, {
+        title: resourceForm.title,
+        type: resourceForm.type,
+        url: resourceForm.url,
+      });
+      alert("Resource added successfully!");
+      setResourceForm({subModuleId: "", title: "", type: "", url: ""}); // Reset form
+      setShowForm(false); // Hide the form after submission
+    } catch (err) {
+      setError("Failed to add resource.");
+    }
+  };
 
-  // Render loading message, error message, or the user progress data
+  const handleInputChange = (e) => {
+    const {name, value} = e.target;
+    setResourceForm({...resourceForm, [name]: value});
+  };
+
   return (
     <>
       <Navbar />
       <div className='admin-dashboard'>
-        {/* <button className='add-material'>Add +</button> */}
         <h2>Admin Dashboard</h2>
-        {loading && <p className='loading'>Loading user progress data...</p>}
+        {loading && <p className='loading'>Loading data...</p>}
         {error && <p className='error'>{error}</p>}
-        {!loading && !error && (
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Post Test</th>
-                <th>Keseluruhan Progress (%)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedUserProgress
-                .filter((user) => user.userName !== "Admin") // Exclude admin user
-                .map((user) => (
-                  <tr key={user.userId}>
-                    <td>{user.userId}</td>
-                    <td>{user.userName}</td>
-                    <td>{user.examLastScore}</td>
-                    <td>{user.overallProgressPercentage}%</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+
+        <button className='btn add-btn' onClick={() => setShowForm(!showForm)}>
+          {showForm ? "Cancel" : "Add +"}
+        </button>
+
+        {showForm && (
+          <div className='add-resource-container'>
+            <h3>Add Resource to Submodule</h3>
+            <form className='add-resource-form' onSubmit={handleAddResource}>
+              <div className='form-group'>
+                <label>Submodule:</label>
+                <select name='subModuleId' value={resourceForm.subModuleId} onChange={handleInputChange} required>
+                  <option value=''>Select Submodule</option>
+                  {submodules.map((submodule) => (
+                    <option key={submodule.id} value={submodule.id}>
+                      {submodule.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className='form-group'>
+                <label>Title:</label>
+                <input type='text' name='title' value={resourceForm.title} onChange={handleInputChange} required />
+              </div>
+              <div className='form-group'>
+                <label>Type:</label>
+                <input type='text' name='type' value={resourceForm.type} onChange={handleInputChange} required />
+              </div>
+              <div className='form-group'>
+                <label>URL:</label>
+                <input type='text' name='url' value={resourceForm.url} onChange={handleInputChange} required />
+              </div>
+              <button className='btn' type='submit'>
+                Add Resource
+              </button>
+            </form>
+          </div>
         )}
+
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Post Test</th>
+              <th>Keseluruhan Progress (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userProgress
+              .filter((user) => user.userName !== "Admin")
+              .map((user) => (
+                <tr key={user.userId}>
+                  <td>{user.userId}</td>
+                  <td>{user.userName}</td>
+                  <td>{user.examLastScore}</td>
+                  <td>{user.overallProgressPercentage}%</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
       </div>
     </>
   );

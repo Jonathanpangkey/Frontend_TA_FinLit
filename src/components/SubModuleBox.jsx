@@ -23,7 +23,6 @@ const SubModuleBox = ({subModule, previousSubModuleCompleted, isFirstSubmodule})
     };
 
     fetchObjectives();
-    console.log(subModule);
   }, [subModule.id]);
 
   const handleNavigation = () => {

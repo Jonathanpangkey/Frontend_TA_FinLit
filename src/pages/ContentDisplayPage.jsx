@@ -2,6 +2,7 @@ import React, {useEffect, useState, useMemo} from "react";
 import {useParams, useNavigate} from "react-router-dom";
 import {getMaterialById, getMaterialsBySubModuleId} from "../api/Material";
 import {getQuizzesBySubModuleId} from "../api/Quiz";
+import {fetchSubModuleById} from "../api/Submodules"; // Adjust path if needed
 import Navbar from "../components/Navbar";
 import MaterialContent from "../components/MaterialContent";
 import QuizContent from "../components/QuizContent";
@@ -12,20 +13,26 @@ function ContentDisplayPage() {
   const [materials, setMaterials] = useState([]);
   const [currentMaterial, setCurrentMaterial] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
+  const [subModuleResources, setSubModuleResources] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [viewingQuiz, setViewingQuiz] = useState(false);
   const [viewingHandson, setViewingHandson] = useState(false);
-  const [loading, setLoading] = useState(true); // ✅ Tambahkan state loading
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true); // ✅ Set loading ke true sebelum fetch data
+      setLoading(true);
       try {
-        const [fetchedMaterials, fetchedQuizzes] = await Promise.all([getMaterialsBySubModuleId(subModuleId), getQuizzesBySubModuleId(subModuleId)]);
+        const [fetchedMaterials, fetchedQuizzes, fetchedSubModule] = await Promise.all([
+          getMaterialsBySubModuleId(subModuleId),
+          getQuizzesBySubModuleId(subModuleId),
+          fetchSubModuleById(subModuleId),
+        ]);
 
         const sortedMaterials = fetchedMaterials.sort((a, b) => a.orderNumber - b.orderNumber);
         setMaterials(sortedMaterials);
         setQuizzes(fetchedQuizzes);
+        setSubModuleResources(fetchedSubModule.resources || []);
 
         if (materialId) {
           const fetchedMaterial = await getMaterialById(materialId);
@@ -34,13 +41,15 @@ function ContentDisplayPage() {
           setViewingHandson(false);
         } else if (quizId) {
           setViewingQuiz(true);
-        } else if (subModuleId === "5") {
-          setViewingHandson(true);
+        } else {
+          if (subModuleId === "5") {
+            setViewingHandson(true);
+          }
         }
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
-        setLoading(false); // ✅ Set loading ke false setelah fetch data selesai
+        setLoading(false);
       }
     };
 
@@ -73,13 +82,12 @@ function ContentDisplayPage() {
       <div className='material-display'>
         <button onClick={() => navigate("/")}>&#8592; Kembali</button>
 
-        {/* ✅ Tampilkan loading sebelum menampilkan konten */}
         {loading ? (
           <p>Loading...</p>
         ) : viewingQuiz ? (
           <QuizContent quizzes={quizzes} quizId={quizId} subModuleId={subModuleId} />
         ) : viewingHandson ? (
-          <HandsonPractice />
+          <HandsonPractice /> // tampilkan hands-on practice di sini
         ) : currentMaterial ? (
           <MaterialContent
             material={currentMaterial}
@@ -89,6 +97,7 @@ function ContentDisplayPage() {
             onViewQuiz={handleViewQuiz}
             onViewHandson={handleViewHandson}
             quizzes={quizzes}
+            subModuleResources={subModuleResources}
             subModuleId={subModuleId}
           />
         ) : (

@@ -72,8 +72,7 @@ const PreTestBox = () => {
       {isOpen && (
         <div className='exam-content'>
           <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolorum porro aperiam sint? Nulla, ipsa voluptatibus quis ab animi deserunt
-            perspiciatis.
+            Pre-test ini bertujuan untuk mengukur pemahaman awal Anda sebelum memulai materi. Silakan jawab semua pertanyaan dengan sebaik-baiknya.
           </p>
         </div>
       )}

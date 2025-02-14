@@ -711,18 +711,69 @@ label {
   text-align: center;
 }
 
-.add-material {
-  border: none;
-  background-color: var(--orange);
-  padding: 10px;
-  color: #fff;
-  font-weight: bold;
+.add-btn {
+  background-color: orange;
   border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.add-resource-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: auto;
+  margin-bottom: 20px;
+  max-width: 500px;
+}
+
+.add-resource-form .form-group {
+  margin-bottom: 15px;
+}
+
+.add-resource-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.add-resource-form input,
+.add-resource-form select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.add-resource-form .btn {
+  color: white;
+  border: none;
+  width: fit-content;
+  border-radius: 4px;
+  background-color: orange;
   cursor: pointer;
 }
 
-.add-material:hover {
-  background-color: orange;
+/* Additional Resources in material */
+.additional-resources li {
+  list-style: none;
+}
+
+.additional-resources ul {
+  padding: 0;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.additional-resources li a {
+  background: var(--orange-gradient-alt);
+  color: #fff;
+  padding: 10px;
+  font-size: 0.9rem;
+  border-radius: 5px;
+  text-decoration: none;
 }
 
 @media screen and (max-width: 900px) {

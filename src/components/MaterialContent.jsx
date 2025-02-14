@@ -2,8 +2,17 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import AnimatedMarkdownElement from "./AnimatedMarkdownElement";
 
-const MaterialContent = ({material, currentIndex, materials, onNavigateToMaterial, onViewQuiz, onViewHandson, quizzes, subModuleId}) => {
-  // Fungsi untuk melihat quiz jika sudah sampai material terakhir
+const MaterialContent = ({
+  material,
+  currentIndex,
+  materials,
+  onNavigateToMaterial,
+  onViewQuiz,
+  onViewHandson,
+  quizzes,
+  subModuleResources,
+  subModuleId,
+}) => {
   const handleViewQuiz = () => {
     if (material?.orderNumber === materials[materials.length - 1]?.orderNumber && quizzes.length > 0) {
       onViewQuiz();
@@ -12,11 +21,10 @@ const MaterialContent = ({material, currentIndex, materials, onNavigateToMateria
 
   const handleViewHandson = () => {
     if (material?.orderNumber === materials[materials.length - 1]?.orderNumber) {
-      onViewHandson(); // Trigger the view handson callback
+      onViewHandson();
     }
   };
 
-  // Fungsi navigasi antar material
   const navigateToMaterial = (offset) => {
     const targetIndex = currentIndex + offset;
     if (targetIndex >= 0 && targetIndex < materials.length) {
@@ -24,7 +32,6 @@ const MaterialContent = ({material, currentIndex, materials, onNavigateToMateria
     }
   };
 
-  // Fungsi untuk scroll ke atas
   const scrollToTop = () => {
     window.scrollTo({top: 0, behavior: "smooth"});
   };
@@ -49,6 +56,21 @@ const MaterialContent = ({material, currentIndex, materials, onNavigateToMateria
       <h2 className='material-title'>Materi</h2>
       <ReactMarkdown components={renderers}>{material.content}</ReactMarkdown>
 
+      {currentIndex === materials.length - 1 && subModuleResources.length > 0 && (
+        <div className='additional-resources'>
+          <h3>Tambahan Materi</h3>
+          <ul>
+            {subModuleResources.map((resource, index) => (
+              <li key={index}>
+                <a href={resource.url} target='_blank' rel='noopener noreferrer'>
+                  {resource.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {currentIndex > 0 && (
         <AnimatedMarkdownElement tag='button'>
           <button onClick={() => navigateToMaterial(-1)}>Sebelumnya</button>
@@ -67,14 +89,13 @@ const MaterialContent = ({material, currentIndex, materials, onNavigateToMateria
         </AnimatedMarkdownElement>
       )}
 
-      {/* Button Lanjut ke Hands-on jika tidak ada quiz */}
       {currentIndex === materials.length - 1 && subModuleId == 5 && (
         <AnimatedMarkdownElement tag='button'>
           <button onClick={handleViewHandson}>Latihan praktek</button>
         </AnimatedMarkdownElement>
       )}
 
-      {/* Tombol Scroll ke Atas */}
+      {/* Scroll to Top Button */}
       <button onClick={scrollToTop} className='scroll-to-top'>
         ↑
       </button>
