@@ -123,7 +123,7 @@ const ExamBox = ({modules}) => {
   return (
     <div
       ref={examBoxRef}
-      className={`exam-box ${isVisible ? "visible" : ""} ${examStatus === "completed" ? "completed" : ""} ${isExamLocked ? "locked" : ""}`}>
+      className={`exam-box ${isVisible ? "visible" : ""} ${examStatus === "completed" ? "completed" : ""} ${isExamLocked ? "lockedd" : ""}`}>
       <div className='exam-header' onClick={() => setIsOpen(!isOpen)}>
         <div className='exam-title'>
           <h3 onClick={() => navigateToExamPage()}>
