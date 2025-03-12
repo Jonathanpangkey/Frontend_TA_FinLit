@@ -97,6 +97,11 @@ const HandsonPractice = () => {
     setTotalIncome(total);
   }, [incomeEntries]);
 
+  // Format number to Rupiah
+  const formatRupiah = (number) => {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
   return (
     <div className='hands-on-practice'>
       <h3>{`Langkah ${currentStep + 1}`}</h3>
@@ -111,7 +116,7 @@ const HandsonPractice = () => {
           <ul className='financial-list'>
             {expenses.map((expense, index) => (
               <li key={index} className='expense'>
-                {expense.name}: {expense.amount}
+                {expense.name}: {formatRupiah(expense.amount)}
                 <button onClick={() => deleteExpense(expense.id)}>x</button>
               </li>
             ))}
@@ -129,7 +134,7 @@ const HandsonPractice = () => {
                   <Draggable key={expense.id} draggableId={expense.id} index={index}>
                     {(provided) => (
                       <li className='expense' ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                        {expense.name}: {expense.amount}
+                        {expense.name}: {formatRupiah(expense.amount)}
                         <button onClick={() => deleteExpense(expense.id)}>x</button>
                       </li>
                     )}
@@ -145,7 +150,7 @@ const HandsonPractice = () => {
       {/* Step 3: Sum expenses */}
       {currentStep === 2 && (
         <div>
-          <h4>Total pengeluaran: {totalExpenses}</h4>
+          <h4>Total pengeluaran: {formatRupiah(totalExpenses)}</h4>
           <p>Pengeluaran Anda akan dihitung secara otomatis.</p>
         </div>
       )}
@@ -159,12 +164,12 @@ const HandsonPractice = () => {
           <ul className='financial-list'>
             {incomeEntries.map((income, index) => (
               <li key={index} className='income'>
-                {income.source}: {income.amount}
+                {income.source}: {formatRupiah(income.amount)}
                 <button onClick={() => deleteIncome(income.id)}>x</button>
               </li>
             ))}
           </ul>
-          <h4>Total penghasilan: {totalIncome}</h4>
+          <h4>Total penghasilan: {formatRupiah(totalIncome)}</h4>
         </div>
       )}
 
@@ -172,10 +177,10 @@ const HandsonPractice = () => {
       {currentStep === 4 && (
         <div>
           <p>
-            Penghasilan: <span className='income'>{totalIncome}</span>
+            Penghasilan: <span className='income'>{formatRupiah(totalIncome)}</span>
           </p>
           <p>
-            Pengeluaran: <span className='expense'>-{totalExpenses}</span>
+            Pengeluaran: <span className='expense'>-{formatRupiah(totalExpenses)}</span>
           </p>
           {totalIncome > totalExpenses ? <h4 className='income'>Status: Surplus!</h4> : <h4 className='expense'>Status: Defisit.</h4>}
         </div>
