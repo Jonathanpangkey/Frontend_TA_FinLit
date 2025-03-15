@@ -55,11 +55,21 @@ const Navbar = () => {
         </div>
         <div className={`navbar-menu ${isOpen ? "open" : ""}`}>
           <ul>
-          <li onClick={() => navigate("/")}>Beranda</li>
-            <li onClick={() => navigate("/about")}>Tentang</li>
-            <li onClick={() => navigate("/description")}>Deskripsi</li>
-            <li onClick={handleToHandson}>Kelola Uang</li>
-            <li onClick={logout}>Logout</li>
+            <li onClick={() => navigate("/")}>
+              <i className='fa-solid fa-house'></i> Beranda
+            </li>
+            <li onClick={() => navigate("/about")}>
+              <i className='fa-solid fa-info-circle'></i> Tentang
+            </li>
+            <li onClick={() => navigate("/description")}>
+              <i className='fa-solid fa-file-alt'></i> Deskripsi
+            </li>
+            <li onClick={handleToHandson}>
+              <i className='fa-solid fa-wallet'></i> Kelola Uang
+            </li>
+            <li onClick={logout}>
+              <i className='fa-solid fa-sign-out-alt'></i> Logout
+            </li>
           </ul>
         </div>
         <div className='navbar-profile' onClick={handleFetchUserInfo}>

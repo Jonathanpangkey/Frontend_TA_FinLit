@@ -12,7 +12,7 @@ const ExamPage = () => {
   const [isExamCompleted, setIsExamCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isReviewing, setIsReviewing] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(1800); 
+  const [timeLeft, setTimeLeft] = useState(1800);
   const navigate = useNavigate();
 
   // Calculate the score and total possible score
@@ -157,7 +157,7 @@ const ExamPage = () => {
         {showResults ? (
           <div className='exam-results'>
             <h3>Hasil Ujian</h3>
-            <p>Skor Anda: {score} dari 100</p>
+            <p>Skor Anda: {Math.floor(score)} dari 100</p>
             {score < passingScore && <p style={{color: "red"}}>Anda tidak lulus ujian. Terus berlatih untuk meningkatkan skor Anda!</p>}
             <button onClick={handleReviewExam}>Tinjau Ujian</button>
             <button onClick={handleGoHome}>Kembali ke Beranda</button>

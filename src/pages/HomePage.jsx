@@ -18,18 +18,21 @@ function HomePage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Fetch user info to get userId
-        const userInfo = await fetchUserInfo();
+        const cachedModules = localStorage.getItem("modules");
 
-        // Fetch modules with user-specific progress
+        if (cachedModules) {
+          setModules(JSON.parse(cachedModules));
+          setLoading(false);
+        }
+
+        const userInfo = await fetchUserInfo();
         const modulesData = await fetchModules(userInfo.id);
         setModules(modulesData);
+        localStorage.setItem("modules", JSON.stringify(modulesData));
 
-        if (userInfo.id) {
-          // Fetch user progress using userId
-          const userProgress = await fetchUserProgressById(userInfo.id);
-          setProgress(userProgress.overallProgressPercentage);
-        }
+        const userProgress = await fetchUserProgressById(userInfo.id);
+        setProgress(userProgress.overallProgressPercentage);
+
         setLoading(false);
       } catch (error) {
         console.error("Error loading data:", error);
