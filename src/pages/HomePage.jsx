@@ -7,12 +7,14 @@ import SubmoduleSection from "../components/SubmoduleSection";
 import ProgressSection from "../components/ProgressCircle";
 import ExamBox from "../components/ExamBox";
 import PreTestBox from "../components/PreTestBox";
+import SearchSection from "../components/SearchSection"; // Import the new SearchBox component
 
 function HomePage() {
   const [modules, setModules] = useState([]);
   const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); // State for search input
   const firstName = localStorage.getItem("firstName");
 
   useEffect(() => {
@@ -44,17 +46,32 @@ function HomePage() {
     loadData();
   }, []);
 
+  // Filter submodules based on the search term
+  const filteredModules = modules.map((module) => ({
+    ...module,
+    subModules: module.subModules.filter((subModule) => subModule.name.toLowerCase().includes(searchTerm.toLowerCase())),
+  }));
+
   return (
     <>
       <Navbar />
       <div className='container home-container'>
+        <h3 style={{textAlign: "center", fontWeight: "bold", fontSize: "2rem", margin: 0}}>
+          👋 Halo, <span>{firstName}</span>
+        </h3>
+        <p style={{textAlign: "center"}}>
+          <i className='fa-solid fa-graduation-cap' style={{marginRight: "5px"}}></i>
+          Tingkatkan pengetahuan anda dengan materi terbaru, yuk mulai belajar ilmu finansial !!
+        </p>
+        <SearchSection searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         <ProgressSection percentage={progress} firstName={firstName} />
+
         {loading ? (
           <p>Loading data, please wait...</p>
         ) : (
           <>
             <PreTestBox />
-            {modules.map((module, index) => {
+            {filteredModules.map((module, index) => {
               const previousModuleCompleted =
                 index === 0
                   ? true

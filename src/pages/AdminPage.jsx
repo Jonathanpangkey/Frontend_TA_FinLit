@@ -112,15 +112,24 @@ function AdminDashboard() {
           </thead>
           <tbody>
             {userProgress
-              .filter((user) => user.userName !== "Admin")
-              .map((user) => (
-                <tr key={user.userId}>
-                  <td>{user.userId}</td>
-                  <td>{user.userName}</td>
-                  <td>{user.examLastScore}</td>
-                  <td>{user.overallProgressPercentage === 98 ? user.overallProgressPercentage + 2 : user.overallProgressPercentage}%</td>
-                </tr>
-              ))}
+              .filter((user) => user.userName !== "admin")
+              .map((user) => {
+                const adjustedProgress =
+                  user.examLastScore !== null && user.examLastScore > 0
+                    ? 100
+                    : user.overallProgressPercentage === 98
+                    ? user.overallProgressPercentage + 2
+                    : user.overallProgressPercentage;
+
+                return (
+                  <tr key={user.userId}>
+                    <td>{user.userId}</td>
+                    <td>{user.userName}</td>
+                    <td>{user.examLastScore}</td>
+                    <td>{adjustedProgress}%</td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </div>
