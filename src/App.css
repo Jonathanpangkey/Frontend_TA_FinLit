@@ -881,6 +881,11 @@ label {
   .search-input {
     max-width: 85%;
   }
+
+  .submodule-title h3,
+  .exam-box h3 {
+    font-size: 14px;
+  }
 }
 
 @media screen and (max-width: 550px) {
