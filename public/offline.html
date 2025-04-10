@@ -32,6 +32,7 @@
         color: #666;
         font-size: 16px;
         margin-bottom: 20px;
+        line-height: 1.5;
       }
       .btn {
         background: linear-gradient(90deg, rgba(255, 157, 0, 0.62) 0%, rgba(252, 163, 19, 1) 50%, rgba(249, 168, 38, 0.62) 100%);
@@ -55,9 +56,17 @@
   </head>
   <body>
     <div class="container home-container">
-      <img class="offline-icon" src="/public/img/offline-icon.png" alt="" />
+      <img class="offline-icon" src="/public/img/offline-icon.png" alt="Offline Icon" />
       <h2>Ooopss!! Anda sedang offline</h2>
-      <p>Konten ini tidak tersedia saat Anda offline. Silakan periksa koneksi internet Anda dan coba lagi.</p>
+      <p>
+        Halaman ini muncul karena Anda sedang tidak terhubung ke internet. Kemungkinan besar, halaman atau sumber daya yang Anda coba akses belum
+        tersimpan di perangkat Anda. Aplikasi ini menggunakan teknologi Progressive Web App (PWA) untuk menyimpan beberapa halaman agar dapat diakses
+        secara offline, tetapi halaman ini memerlukan koneksi internet untuk pertama kali diakses.
+      </p>
+      <p>
+        Untuk melanjutkan, pastikan perangkat Anda terhubung ke internet, lalu coba muat ulang halaman ini. Jika Anda ingin kembali ke halaman utama,
+        klik tombol di bawah ini.
+      </p>
       <button onClick="window.location.href='/'" class="btn">Kembali ke Halaman Utama</button>
     </div>
   </body>
