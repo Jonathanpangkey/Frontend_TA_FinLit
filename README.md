@@ -1,8 +1,7 @@
-# React + Vite
+# FinLit Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Ini adalah codebase frontend dari **FinLit**, sebuah aplikasi edukasi finansial berbasis web yang dirancang untuk membantu pengguna memahami konsep keuangan secara interaktif dan menyenangkan.
 
-Currently, two official plugins are available:
+Aplikasi ini berfokus pada pembelajaran finansial melalui modul, submodul, materi, dan kuis yang disusun secara terstruktur.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🔗 Backend Repository: [Backend FinLit](https://github.com/Jonathanandreaspangkey/Backend_TA_FinLit)
